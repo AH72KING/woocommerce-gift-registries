@@ -1,7 +1,7 @@
 <?php
 /**
 * Plugin Name: WooCommerce Gift Registries
-* Plugin URI: http://ahsandev.com
+* Plugin URI: https://github.com/AH72KING/woocommerce-gift-registries
 * Description:Add gift registry function to website
 * Author: Ahsan Khan
 * Author URI: http://ahsandev.com
