@@ -3,24 +3,27 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 global $woocommerce;
 $cart_url = $woocommerce->cart->get_cart_url();
-//wc_print_notices();
 
 if (!$id) return;
-$registry_id = $id;
-$wishlist = Magenest_Giftregistry_Model::get_wishlist($id);
-$registrantname = $wishlist->registrant_firstname . ' '. $wishlist->registrant_lastname;
-$coregistrantname = $wishlist->coregistrant_firstname . ' '. $wishlist->coregistrant_lastname;
+$registry_id 		= $id;
+$wishlist 			= Magenest_Giftregistry_Model::get_wishlist($id);
+$registrantname 	= $wishlist->registrant_firstname . ' '. $wishlist->registrant_lastname;
+$coregistrantname 	= $wishlist->coregistrant_firstname . ' '. $wishlist->coregistrant_lastname;
 
 $registry_name = $registrantname;
 
-if ($coregistrantname !=' ') $registry_name .= __(' and' , GIFTREGISTRY_TEXT_DOMAIN) . " ". $coregistrantname;
+if($coregistrantname !=' '){
+	$registry_name .= __(' and' , GIFTREGISTRY_TEXT_DOMAIN) . " ". $coregistrantname;
+}
 
 
 $items = Magenest_Giftregistry_Model::get_items_in_giftregistry($id);
+
 ?>
 
 
-<div id="thongbao" class="woocommerce-message hidden"><a class="button wc-forward" href="<?php echo wc_get_page_permalink( 'cart' )?>">View Cart</a> Items has been added to your cart.</div>
+<div id="thongbao" class="woocommerce-message hidden">
+<a class="button wc-forward" href="<?php echo wc_get_page_permalink( 'cart' )?>">View Cart</a> Items has been added to your cart.</div>
 <?php $banner_image = $wishlist->banner_image;
 		if(!empty($banner_image))
 		{
@@ -241,21 +244,24 @@ $items = Magenest_Giftregistry_Model::get_items_in_giftregistry($id);
         foreach($all_categories as $category){
        		    $count =1;
        		if (! empty ( $items )) {
-				foreach ( $items as $item ) {
-				
-				    $p_categories = array();
+				foreach ( $items as $item ){
+            $disableProductFromBuying = false;
+  				  if(isset($item['quantity']) && ($item['quantity'] < 1)){
+                $disableProductFromBuying = true;
+            }
+				  $p_categories = array();
 					$product_cats = wp_get_post_terms( $item['product_id'], 'product_cat' );
-				foreach ( $product_cats as $product_cat ) {
-          //if(get_option( "taxonomy_".$category->term_id) == 1){
-				    $p_categories[] = $product_cat->name;
-          //}
-				}
+  				foreach ( $product_cats as $product_cat ) {
+            //if(get_option( "taxonomy_".$category->term_id) == 1){
+  				    $p_categories[] = $product_cat->name;
+            //}
+  				}
 				  if(in_array($category, $p_categories)){
 				    if(!in_array($item['product_id'], $uniqueItems)){
 				       array_push($uniqueItems, $item['product_id']);
 				       
 				       if($count==1){?>
-    				   <tr>
+    				   <tr class="">
                           <td class="parent-cat" colspan="6" style="background: #555; border: none; font-size: 1em; font-weight: bold; text-align: left; margin-top: 2em; padding: 14px 19px 0px; text-transform: uppercase;"><h3 style="color:#fff"><?php echo $category; ?></h3></td>
                         </tr>
 				    <?php $count++; 	}
@@ -265,12 +271,14 @@ $items = Magenest_Giftregistry_Model::get_items_in_giftregistry($id);
           }     
 					$_product = wc_get_product ($productToGet);
 					$request = unserialize($item['info_request']);
-					 $request_st = Magenest_Giftregistry_Model::show_info_request($item, $id);
-					 $request_st = str_replace(' ', '', $request_st);
-					
-					?>
-                   
-        <tr>
+					$request_st = Magenest_Giftregistry_Model::show_info_request($item, $id);
+					$request_st = str_replace(' ', '', $request_st);
+          $statusClassOfProduct = ''; 
+          if($disableProductFromBuying == true){
+            $statusClassOfProduct = 'disable disable-product-buy'; 
+          } 
+        ?>          
+        <tr class="<?= $statusClassOfProduct;?>">
           <td class="product-thumbnail registry_imgs" style="width: 25%"><?php
 					
 					$thumbnail = $_product->get_image ();
@@ -298,25 +306,82 @@ $items = Magenest_Giftregistry_Model::get_items_in_giftregistry($id);
 				        
 				    }*/
 					
-		?></td>
-          <td class="product-price"><?php
-								if(isset($item['amount']) && !empty($item['amount'])){
-								    echo '<span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol">R</span>'.$item['amount'].'</span>';
-								} else 
-					echo $_product->get_price_html();
-					?></td>
-          <td style="width: 30px;"class="product-quantity"><?php if (isset( $item['quantity'])) {
-									$receive_qty=0;
-									if (isset($item['received_qty'])) $receive_qty =$item['received_qty'];
-									$remain_qty = $item['quantity'] - $receive_qty;//received_qty
-									if ($remain_qty < 0) $remain_qty = 0;
-									 echo $remain_qty;
-								}
-									 ?></td>
-          <td><input style="width: 40px" type="text" id="<?php echo $item['id']?>" /></td>
-          <td>
-          <button 
-            style="background-color: #1aada3; color: white;"
+		?>
+		</td>
+    <?php 
+      $isgcp = false;
+      if(ign_gc_pricer::is_gcp($item['product_id'])){
+          $isgcp = true;
+      }
+    ?>
+     <td class="product-price" data-gcp="<?=$isgcp;?>">
+  <?php 
+     if(isset($item['amount']) && !empty($item['amount'])){ 
+  ?>
+        <span class="woocommerce-Price-amount amount">
+          <span class="woocommerce-Price-currencySymbol">R</span>
+          <span class="woocommerce-Price-current-amount"><?=$item['amount'];?></span>
+        </span>
+  <?php 
+     }elseif(!empty($_product->get_price_html())){
+        echo $_product->get_price_html();
+     }else{
+            global $product;
+              // go through a few options to find the $price we should display in the input (typically will be the suggested price)
+              if( isset( $_POST['nyp'] ) &&  floatval( $_POST['nyp'] ) >= 0 ) {
+                $num_decimals = ( int ) get_option( 'woocommerce_price_num_decimals' );
+                $price = round( floatval( $_POST['nyp'] ), $num_decimals );
+              }elseif ( $product->suggested && floatval( $product->suggested ) > 0 ) {
+                $price = $product->suggested;
+              }elseif ( $product->minimum && floatval( $product->minimum ) > 0 ) {
+                $price =  $product->minimum;
+              }else {
+                $price = '';
+              }
+          ?>
+              <div class="gcp">
+                <?php echo ign_gc_pricer::price_input_helper( esc_attr( $price ), array( 'name' => 'nyp' ) ); ?>
+              </div> 
+    <?php } ?>
+		</td>
+    <?php
+    $colspan='';
+      if($disableProductFromBuying == true){
+        $colspan = 'colspan="3"';
+      }
+    ?>
+    <td style="width: 30px;" class="product-quantity" <?=$colspan;?>>
+      <?php 
+          if(isset( $item['quantity'])) {
+						$receive_qty=0;
+						if(isset($item['received_qty'])){
+              $receive_qty = $item['received_qty'];
+            }
+						$remain_qty = $item['quantity'] - $receive_qty;
+						if($remain_qty < 0){
+              $remain_qty = 0;
+            }
+            if($disableProductFromBuying == true){ 
+      ?>        
+                  <span>Sold</span>
+                  <span class="vc_icon_element-icon fa fa-gift"></span>
+    <?php
+            }else{
+							//echo $remain_qty;
+              echo $item['quantity'];
+            }
+					}
+			?>
+                   
+    </td>
+    <?php
+      if($disableProductFromBuying == false){
+    ?>
+    <td>
+        <input style="width: 40px" type="text" id="<?php echo $item['id']?>" />
+    </td>
+    <td>
+      <button style="background-color: #1aada3; color: white;"
             data-product-id="<?= $item['product_id']; ?>"
             data-variation-id="<?= $item['variation_id'];?>" 
             data-registry-id="<?= $registry_id;?>" 
@@ -325,15 +390,14 @@ $items = Magenest_Giftregistry_Model::get_items_in_giftregistry($id);
             class="single_add_to_cart_button button alt" 
             onclick="giftit(this)">
             <?php echo __('BUY GIFT') ?>
-          </button>
-          </td>
-        </tr>
+      </button>
+    
+    </td>
+    <?php } ?>
+  </tr>
         <?php  
 			 }}}
-			
-			 
-       		}	
-			  
+    }	
 	} 
 				    
                 echo '<div class="hidden"><pre>'; print_r($uniqueItems);  echo '</pre></div>';?>
@@ -343,17 +407,32 @@ $items = Magenest_Giftregistry_Model::get_items_in_giftregistry($id);
 </div>
 <div class="spinner"></div>
 <style>
-    .spinner {
-background: url('/wp-admin/images/wpspin_light.gif') no-repeat;
-background-size: 16px 16px;
-display: none;
-float: right;
-opacity: .7;
-filter: alpha(opacity=70);
-width: 16px;
-height: 16px;
-margin: 5px 5px 0;
-}
+  .spinner {
+    background: url('/wp-admin/images/wpspin_light.gif') no-repeat;
+    background-size: 16px 16px;
+    display: none;
+    float: right;
+    opacity: .7;
+    filter: alpha(opacity=70);
+    width: 16px;
+    height: 16px;
+    margin: 5px 5px 0;
+  }
+  tr.disable.disable-product-buy {
+      background: #eee;
+      opacity: 0.7;
+  }
+  tr.disable.disable-product-buy td.product-quantity{
+    color: #000;
+  }
+  tr.disable.disable-product-buy td.product-quantity span{
+    color: #000;
+    font-size: 20px;
+    margin: 2px 5px;
+  }
+  tr.disable.disable-product-buy td.product-quantity span.vc_icon_element-icon{
+    font-size: 26px;
+  }
 
 /* added by Hamid Raza */
 .gift-buying-callout .step h4 {
@@ -460,12 +539,27 @@ margin: 5px 5px 0;
 function giftit(obj) {
 
   var qty= jQuery(obj).parent().prev('td').find('input').val();
-  //console.log(qty);
   var submit_link = jQuery(obj).attr('data-buy') + '&quantity=' + qty;
   var product_id = jQuery(obj).attr('data-product-id');
   var variation_id = jQuery(obj).attr('data-variation-id');
   var registry_id = jQuery(obj).attr('data-registry-id');
   var addTocartLink = '<?=get_template_directory_uri().'/gift_product_add_to_cart.php';?>';
+  var itemPrice = '';
+  var gcp = false;
+
+  if(jQuery(obj).parents('tr').find('.gcp').length > 0){
+      itemPrice = jQuery(obj).parents('tr').find(".gcp").find("input[name='gcp']").val();
+      gcp = itemPrice;
+  }else{
+      itemPrice = jQuery(obj).parents('tr').find('.woocommerce-Price-amount.amount').text();
+      //gcp = itemPrice;
+  }
+  itemPrice = itemPrice.replace(',' , '');
+  itemPrice = itemPrice.replace('R' , '');
+  var isgcp = jQuery(obj).parents('tr').find('.product-price').attr('data-gcp');
+  if(isgcp == "1" || isgcp == 1){
+    gcp = itemPrice;
+  }
     jQuery.ajax({
         type: "POST",
         url: addTocartLink,
@@ -473,36 +567,25 @@ function giftit(obj) {
           product_id:product_id, 
           qty:qty,
           variation_id:variation_id,
-          registry_id:registry_id
+          registry_id:registry_id,
+          itemPrice:itemPrice,
+          gcp:gcp
         },
         beforeSend:function(){
             jQuery(obj).html('BUY GIFT <i class="fa fa-spinner fa-pulse fa-fw"></i>');
         },
         success: function(response) {
-          console.log(response);
-            jQuery(obj).html('BUY GIFT');
-           // jQuery('#thongbao').removeClass('hidden');
-           // window.location ='<?php // echo $cart_url ?>';
-           // get price
-           var itemPrice = jQuery(obj).parents('tr').find('.woocommerce-Price-amount').html();
-           console.log(itemPrice);
-           var startIndex= itemPrice.indexOf('</span>')+7;
-           itemPrice = itemPrice.substr(startIndex);
-           itemPrice = itemPrice.replace(',' , '');
-           //console.log(itemPrice);
+           jQuery(obj).html('BUY GIFT');
            var totalPrice = jQuery('.basel-cart-totals').find('.woocommerce-Price-amount').html();
-           //console.log(totalPrice);
            var startIndex= totalPrice.indexOf('</span>')+7;
            totalPrice = totalPrice.substr(startIndex);
            totalPrice = totalPrice.replace(',' , '');
-          // if(is_numeric(itemPrice) && is_numeric(totalPrice)){
-               totalPrice = parseInt(totalPrice) + parseInt(itemPrice); console.log(totalPrice);
-               var cartCount = jQuery('.basel-cart-totals').find('.basel-cart-number').html();
-               jQuery('.basel-cart-totals').find('.basel-cart-number').html(parseInt(cartCount)+1); // increment cart counter
-               jQuery('.basel-cart-totals').find('.basel-cart-subtotal').find('.woocommerce-Price-amount').html('<span class="woocommerce-Price-currencySymbol">R</span>'+totalPrice); 
-          // }
-          
-            jQuery('#popup2').show();
+           totalPrice = parseInt(totalPrice) + parseInt(itemPrice); 
+           console.log(totalPrice);
+           var cartCount = jQuery('.basel-cart-totals').find('.basel-cart-number').html();
+           jQuery('.basel-cart-totals').find('.basel-cart-number').html(parseInt(cartCount)+1); // increment cart counter
+           jQuery('.basel-cart-totals').find('.basel-cart-subtotal').find('.woocommerce-Price-amount').html('<span class="woocommerce-Price-currencySymbol">R</span>'+totalPrice); 
+           jQuery('#popup2').show();
           
         }
     });

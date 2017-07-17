@@ -1,4 +1,5 @@
-# woocommerce-gift-registries
+# Woocommerce Gift Registries
+## woocommerce-gift-registries
 - Customizations in Woocommerce Gift Registry Plugin Which Was By Magenest
 - Fixed Bug from Woocommerce Gift Registry
 - User Can Add Multiple Registries which was not in Woocommerce Gift Registry
