@@ -233,7 +233,11 @@ class Magenest_Giftregistry_Admin extends WP_List_Table{
 
 		  return $actions;
 		}
-		public function display_tablenav(){
+		public function display_tablenav($which){
+			//echo '<pre>';
+			//print_r($which); // top
+			//echo '</pre>';
+
 			?>
 		<form action="" method="GET">
 		    <?php 

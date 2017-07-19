@@ -1,405 +1,432 @@
 <?php
+if (!defined('ABSPATH')) exit; // Exit if accessed directly
+  global $woocommerce;
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
-global $woocommerce;
-$cart_url = $woocommerce->cart->get_cart_url();
+  $cart_url = $woocommerce->cart->get_cart_url();
+  if(!$id) return;
 
-if (!$id) return;
-$registry_id 		= $id;
-$wishlist 			= Magenest_Giftregistry_Model::get_wishlist($id);
-$registrantname 	= $wishlist->registrant_firstname . ' '. $wishlist->registrant_lastname;
-$coregistrantname 	= $wishlist->coregistrant_firstname . ' '. $wishlist->coregistrant_lastname;
+  $registry_id 		= $id;
+  $wishlist 			= Magenest_Giftregistry_Model::get_wishlist($id);
+  $registrantname 	= $wishlist->registrant_firstname . ' '. $wishlist->registrant_lastname;
+  $coregistrantname 	= $wishlist->coregistrant_firstname . ' '. $wishlist->coregistrant_lastname;
+  $registry_name = $registrantname;
 
-$registry_name = $registrantname;
+  if($coregistrantname !=' '){
+  	$registry_name .= __(' and' , GIFTREGISTRY_TEXT_DOMAIN) . " ". $coregistrantname;
+  }
 
-if($coregistrantname !=' '){
-	$registry_name .= __(' and' , GIFTREGISTRY_TEXT_DOMAIN) . " ". $coregistrantname;
-}
-
-
-$items = Magenest_Giftregistry_Model::get_items_in_giftregistry($id);
-
+  $items = Magenest_Giftregistry_Model::get_items_in_giftregistry($id);
 ?>
-
-
-<div id="thongbao" class="woocommerce-message hidden">
-<a class="button wc-forward" href="<?php echo wc_get_page_permalink( 'cart' )?>">View Cart</a> Items has been added to your cart.</div>
-<?php $banner_image = $wishlist->banner_image;
-		if(!empty($banner_image))
-		{
-			$img_url = get_option($banner_image);
-			if(empty($img_url)){
-			    $img_url = get_site_url().'/wp-content/uploads/2017/05/'.$banner_image;
-			}
-		}else {
-			
-		//	$img_url =  get_template_directory_uri().'/images/default-couple-banner.jpg';
-	  	$img_url =  get_site_url().'/wp-content/uploads/2017/05/wrapistry-registry-background-flowers.png';
-		
-		   
-		}
+  <div id="thongbao" class="woocommerce-message hidden">
+    <a class="button wc-forward" href="<?php echo wc_get_page_permalink( 'cart' )?>">
+    View Cart
+    </a> 
+    Items has been added to your cart.
+  </div>
+<?php 
+    $banner_image = $wishlist->banner_image;
+  		if(!empty($banner_image)){
+  			$img_url = get_option($banner_image);
+  			if(empty($img_url)){
+          $img_url = get_site_url().'/wp-content/uploads/2017/05/'.$banner_image;
+  			}
+  		}else{
+  	  	$img_url =  get_site_url().'/wp-content/uploads/2017/05/wrapistry-registry-background-flowers.png';
+  		}
 		$profile_photo = $wishlist->image;
-		
-		if(empty($profile_photo))
-		{
-			$profile_photo=  get_template_directory_uri().'/images/favicon.png';
-		}
-	//	if(	$img_url == 'https://wrapistry.shop/wp-content/themes/basel/images/default-couple-banner.jpg'){
-		   // $img_url = 'https://wrapistry.shop/wp-content/uploads/2017/05/wrapistry-registry-background-flowers.png';
-	//	}
-		?>
-<div class="row registry-header-wrapper  testing registry-header-wrapper-1" style= "background-image: url(<?php echo $img_url; ?>);">
-  <div class=" col-md-12 registry-header  group"> <small><span>Our registry</span></small> <br>
-    <h1><?php echo $registry_name?></h1>
-    <br>
-    <p class="registry-header__date"><?php echo date('F j, Y' ,strtotime($wishlist->event_date_time  )); ?></p>
-    <br>
-    <div class="avatar-wrapper col-md-12"> <img src="<?php echo $profile_photo; ?>" class="avatar img-circle" style="width:140px;height:140px;" name="<?php echo $registry_name?>" > </div>
-  </div>
-</div>
-<div class="row registry-guest-wrapper"> 
-  <div class=" col-md-12 guest-greeting">
-     <p>
-      <?php echo $wishlist->message ?> <br>
-    </p>
-  </div>
-  <!-- Added by Hamid raza -->
-  <div class="gift-buying-callout">
-            <h2 class="section-heading"><span>Are you buying a gift?</span></h2>
-            <div class="row  group ">
-                <div class=" col-md-4 col-sm-12 step  column  column--1-3  ">
-                    <h4>Select gift below</h4>
-                     
-                </div>
-                <div class=" col-md-4 col-sm-12 step  column  column--1-3 ">
-                    <h4>Add to cart and pay</h4>
-                    <p>using any of our payment methods</p>
-                    <span><i class="fa fa-angle-double-right fa-2x" aria-hidden="true"></i></span>
-                </div>
-                <div class="col-md-4 col-sm-12 step  column  column--1-3  column--last ">
-                    <h4>We’ll deliver directly</h4>
-                    <p>to the couple on your behalf</p>
-                    <span><i class="fa fa-angle-double-right fa-2x" aria-hidden="true"></i></span>
-                </div>
-            </div>
-            <p class="gift-buying-callout__incentive"><b> </p>
+  		if(empty($profile_photo)){
+  			$profile_photo=  get_template_directory_uri().'/images/favicon.png';
+  		}
+?>
+  <div class="row registry-header-wrapper  testing registry-header-wrapper-1" style= "background-image: url(<?= $img_url; ?>);">
+      <div class=" col-md-12 registry-header  group"> <small><span>Our registry</span></small> <br>
+        <h1><?= $registry_name; ?></h1><br>
+        <p class="registry-header__date">
+          <?= date('F j, Y' ,strtotime($wishlist->event_date_time)); ?>
+        </p><br>
+        <div class="avatar-wrapper col-md-12"> 
+          <img src="<?= $profile_photo; ?>" class="avatar img-circle" style="width:140px;height:140px;" name="<?= $registry_name?>" > 
         </div>
-  
-  <!--End-->
-  
-</div>
+      </div>
+  </div>
+  <div class="row registry-guest-wrapper"> 
+    <div class=" col-md-12 guest-greeting">
+       <p>
+        <?= $wishlist->message ?> <br>
+      </p>
+    </div>
+    <div class="gift-buying-callout">
+        <h2 class="section-heading">
+            <span>Are you buying a gift?</span>
+        </h2>
+        <div class="row  group ">
+            <div class=" col-md-4 col-sm-12 step  column  column--1-3  ">
+                <h4>Select gift below</h4> 
+            </div>
+            <div class=" col-md-4 col-sm-12 step  column  column--1-3 ">
+                <h4>Add to cart and pay</h4>
+                  <p>using any of our payment methods</p>
+                  <span>
+                    <i class="fa fa-angle-double-right fa-2x" aria-hidden="true"></i>
+                  </span>
+            </div>
+            <div class="col-md-4 col-sm-12 step  column  column--1-3  column--last ">
+                <h4>We’ll deliver directly</h4>
+                <p>to the couple on your behalf</p>
+                <span>
+                  <i class="fa fa-angle-double-right fa-2x" aria-hidden="true"></i>
+                </span>
+            </div>
+        </div>
+        <p class="gift-buying-callout__incentive"><b></b></p>
+    </div>
+  </div>
+
 <?php
 		/**
 		 * woocommerce_before_main_content hook
-		 *
 		 * @hooked woocommerce_output_content_wrapper - 10 (outputs opening divs for the content)
 		 * @hooked woocommerce_breadcrumb - 20 
 		 */
 		do_action( 'woocommerce_before_main_content' );
-	?>
 
-		<?php do_action( 'woocommerce_archive_description' ); ?>
-			
+    do_action( 'woocommerce_archive_description' ); 
+?>
 		<div class="shop-loop-head">
-			
-			<?php woocommerce_breadcrumb(); ?>
-
-			<?php
+<?php 
+        woocommerce_breadcrumb();
 				/**
 				 * woocommerce_before_shop_loop hook
-				 *
 				 * @hooked woocommerce_result_count - 20
 				 * @hooked woocommerce_catalog_ordering - 30
 				 */
 				do_action( 'woocommerce_before_shop_loop' );
-			?>
+?>
 		</div>
-	<div class="filters-area" style="display:none">
-				<div class="filters-inner-area row">
-					<div id="BASEL_Widget_Sorting" class="filter-widget widget-count-3 col-xs-12 col-sm-6 col-md-6"><h5 class="widget-title">Sort by</h5><form class="woocommerce-ordering with-list" method="get">
-			<ul>
-											<li>	
-											<li>
-					<a data-order="category" class="">Category</a>
-				</li>
-				<li>
-					<a data-order="price" class="">Price: low to high</a>
-				</li>
-											<li>
-					<a data-order="price-desc" class="">Price: high to low</a>
-				</li>
-					</ul>
-	</form>
-</div>
-<div id="BASEL_Widget_Price_Filter" class="filter-widget widget-count-3 col-xs-12 col-sm-6 col-md-6">
-    <h5 class="widget-title">Price filter</h5>					
-    <div class="basel-price-filter">
-						<ul>
-															<li>
-									<a class="">All</a>
+	  <div class="filters-area" style="display:none">
+			<div class="filters-inner-area row">
+					<div id="BASEL_Widget_Sorting" class="filter-widget widget-count-3 col-xs-12 col-sm-6 col-md-6">
+              <h5 class="widget-title">Sort by</h5>
+            <form class="woocommerce-ordering with-list" method="get">
+  			       <ul>
+                  <li>
+        					   <a data-order="category" class="">Category</a>
+        				  </li>
+        				  <li>
+        					   <a data-order="price" class="">Price: low to high</a>
+        				  </li>
+  								<li>
+          					<a data-order="price-desc" class="">Price: high to low</a>
+          				</li>
+  					   </ul>
+  	       </form>
+          </div>
+          <div id="BASEL_Widget_Price_Filter" class="filter-widget widget-count-3 col-xs-12 col-sm-6 col-md-6">
+              <h5 class="widget-title">Price filter</h5>					
+            <div class="basel-price-filter">
+						  <ul>
+                <li>
+									 <a class="">All</a>
 								</li>
-															<li>
-									<a data-range="0-3370" class=""><span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol">R</span>0</span> - <span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol">R</span>3,370</span></a>
+								<li>
+  									<a data-range="0-3370" class="">
+                    <span class="woocommerce-Price-amount amount">
+                      <span class="woocommerce-Price-currencySymbol">R</span>0
+                    </span> - 
+                    <span class="woocommerce-Price-amount amount">
+                      <span class="woocommerce-Price-currencySymbol">R</span>3,370
+                    </span>
+                    </a>
 								</li>
-															<li>
-									<a data-range="3370-6740" class=""><span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol">R</span>3,370</span> - <span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol">R</span>6,740</span></a>
+								<li>
+  									<a data-range="3370-6740" class="">
+                      <span class="woocommerce-Price-amount amount">
+                        <span class="woocommerce-Price-currencySymbol">R</span>3,370
+                      </span> - 
+                      <span class="woocommerce-Price-amount amount">
+                        <span class="woocommerce-Price-currencySymbol">R</span>6,740
+                      </span>
+                    </a>
 								</li>
-															<li>
-									<a data-range="6740-10110" class=""><span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol">R</span>6,740</span> - <span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol">R</span>10,110</span></a>
+								<li>
+  									<a data-range="6740-10110" class="">
+                    <span class="woocommerce-Price-amount amount">
+                        <span class="woocommerce-Price-currencySymbol">R</span>6,740
+                    </span> - 
+                    <span class="woocommerce-Price-amount amount">
+                        <span class="woocommerce-Price-currencySymbol">R</span>10,110
+                    </span>
+                    </a>
 								</li>
-															<li>
-									<a data-range="10110-13480" class=""><span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol">R</span>10,110</span> - <span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol">R</span>13,480</span></a>
+								<li>
+  									<a data-range="10110-13480" class="">
+                    <span class="woocommerce-Price-amount amount">
+                      <span class="woocommerce-Price-currencySymbol">R</span>10,110
+                    </span> - 
+                    <span class="woocommerce-Price-amount amount">
+                      <span class="woocommerce-Price-currencySymbol">R</span>13,480
+                    </span>
+                    </a>
 								</li>
-															<li>
-									<a data-range="13480" class=""><span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol">R</span>13,480</span> +</a>
+								<li>
+  									<a data-range="13480" class="">
+                      <span class="woocommerce-Price-amount amount">
+                        <span class="woocommerce-Price-currencySymbol">R</span>13,480
+                      </span> +
+                    </a>
 								</li>
-													</ul>
+							</ul>
 					</div>
 				</div>
-							</div><!-- .filters-inner-area -->
-			</div>
-
+			</div><!-- .filters-inner-area -->
+		</div><!-- .filters-area -->
 
 <div class="row">
   <div class="col-md-12">
-    <?php $tax_terms = get_terms( 'product_cat'); ?>
     <?php 
+        $tax_terms = get_terms( 'product_cat'); 
 				if(!empty($tax_terms)){
-					echo '<select name="categoryfilter" id="category_filter" style="width: 20%;float: right;display:none" ><option value="0" >Show All...</option>';
-				foreach ($tax_terms as $term) {  
-		 
-				$term_id = $term->term_id; //Define the term ID
-				$term_link = get_term_link( $term, $taxonomy ); //Get the link to the archive page for that term
-				$term_name = $term->name;
-				$thumb_id = get_woocommerce_term_meta($term->term_id, 'thumbnail_id', true);
-				$term_img = wp_get_attachment_url($thumb_id);
-				//echo '<a class="ccats" href="' . $term_link . '"><span class="label">' . $term_name . '</span></a>';
-				echo '<option value="' . $term->term_id . '">' . $term->name . '</option>';
-			 
-			} //end foreach
-				echo '</select>';
-				} //end if					?>
+    ?>
+					<select name="categoryfilter" id="category_filter" style="width: 20%;float: right;display:none" >
+          <option value="0" >Show All...</option>
+    <?php
+  				foreach($tax_terms as $term) {  
+    				$term_id = $term->term_id; //Define the term ID
+    				$term_link = get_term_link( $term, $taxonomy ); //Get the link to the archive page for that term
+    				$term_name = $term->name;
+    				$thumb_id = get_woocommerce_term_meta($term->term_id, 'thumbnail_id', true);
+    				$term_img = wp_get_attachment_url($thumb_id);
+    				//echo '<a class="ccats" href="' . $term_link . '"><span class="label">' . $term_name . '</span></a>';
+    				echo '<option value="' . $term->term_id . '">' . $term->name . '</option>';
+    			 
+  			  } //end foreach
+    ?>
+				</select>
+    <?php } ?>
   </div>
 </div>
-<style>
-    table.shop_table .wp-post-image
-    {
-        max-width: 60% !important;
-    }
-    
-    </style>
+  <style>
+      table.shop_table .wp-post-image{
+          max-width: 60% !important;
+      }
+  </style>
 <div class= "row items-container">
   <div class="col-md-12">
     <table class="shop_table cart" cellspacing="0">
-      <?php
-      // code added by dev732
-      $used_categories    = array();
-      $all_categories    = array();
-     if (! empty ( $items )) {
-                // new item array, to store unique items, for duplicate increment item quantity
-                 $uniqueItemArray = array();
-				foreach ( $items as $key=>$item ) {
-				    if(!array_key_exists($item['product_id'], $uniqueItemArray)){
-                 $categories = wp_get_post_terms( $item['product_id'], 'product_cat');
-                 $registryCats = array();
-                   if(is_array($categories) && !empty($categories)){
-                       foreach($categories as $key => $category) {
-                        $taxonomy_term_meta = get_option( "taxonomy_".$category->term_id);
-                          if(is_array($taxonomy_term_meta) && !empty($taxonomy_term_meta)){
-                              if(isset($taxonomy_term_meta['registry_cat'])){
-                                  array_push($registryCats, $category);
-                              } 
-                          }
-                       }
-                   }
-				        $used_categories[] = $registryCats;
-				        $uniqueItemArray[$item['product_id']] = $item;
-				    }else{
-				       $uniqueItemArray[$item['product_id']]['quantity'] += 1; 
-				    }
-				}
-			$items = $uniqueItemArray;
-     }
-     $uniqueItems = array();
-     foreach($used_categories as $categories){
-        foreach($categories as $category){
-            //if(get_option( "taxonomy_".$category->term_id) == 1){
-               // check for items, so that not duplicate
-               if(!in_array($category->term_id, $uniqueItems)){
-                  array_push($uniqueItems, $category->term_id); 
-               }
-               if(!in_array($category->parent, $uniqueItems)){
-                  $all_categories[]    =   $category->name;
-              }
-           //}
-        }
-     }
-     $all_categories = array_unique($all_categories); // These are all categories 
-     asort($all_categories);
-      ?>
       <tbody id ="ajax_results">
-        <?php
-         // code added by dev732
-        $uniqueItems = array();
-        foreach($all_categories as $category){
-       		    $count =1;
-       		if (! empty ( $items )) {
-				foreach ( $items as $item ){
-            $disableProductFromBuying = false;
-  				  if(isset($item['quantity']) && ($item['quantity'] < 1)){
-                $disableProductFromBuying = true;
-            }
-				  $p_categories = array();
-					$product_cats = wp_get_post_terms( $item['product_id'], 'product_cat' );
-  				foreach ( $product_cats as $product_cat ) {
-            //if(get_option( "taxonomy_".$category->term_id) == 1){
-  				    $p_categories[] = $product_cat->name;
-            //}
-  				}
-				  if(in_array($category, $p_categories)){
-				    if(!in_array($item['product_id'], $uniqueItems)){
-				       array_push($uniqueItems, $item['product_id']);
-				       
-				       if($count==1){?>
-    				   <tr class="">
-                          <td class="parent-cat" colspan="6" style="background: #555; border: none; font-size: 1em; font-weight: bold; text-align: left; margin-top: 2em; padding: 14px 19px 0px; text-transform: uppercase;"><h3 style="color:#fff"><?php echo $category; ?></h3></td>
-                        </tr>
-				    <?php $count++; 	}
-            $productToGet = $item['product_id'];
-				  if(isset($item['variation_id']) && !empty($item['variation_id'])){
-            $productToGet = $item['variation_id'];
-          }     
-					$_product = wc_get_product ($productToGet);
-					$request = unserialize($item['info_request']);
-					$request_st = Magenest_Giftregistry_Model::show_info_request($item, $id);
-					$request_st = str_replace(' ', '', $request_st);
-          $statusClassOfProduct = ''; 
-          if($disableProductFromBuying == true){
-            $statusClassOfProduct = 'disable disable-product-buy'; 
-          } 
-        ?>          
-        <tr class="<?= $statusClassOfProduct;?>">
-          <td class="product-thumbnail registry_imgs" style="width: 25%"><?php
-					
-					$thumbnail = $_product->get_image ();
-					printf ( '<a href="%s">%s</a>', $_product->get_permalink (), $thumbnail );
-					?></td>
-          <td class="product-name" style="width:32%"><?php 
-					//echo '<h3>'.$product_cat->name.'</h3>'.' ';
-					echo sprintf( '<a href="%s">%s</a>', $_product->get_permalink(), $_product->get_title() );
-        global $post;                               
-        $arrayCheck = array();
-        $terms = get_the_terms( $item['product_id'], 'product_cat' );
-        foreach ($terms as $term) {
-            array_push($arrayCheck,$term->term_id);
-        }
-      if(in_array(134,$arrayCheck)){ ?>
-          <br><p class="shp_txt">Cash Funds</p>
-        <!-- Show on products list pages   for saving time we are show  that text using html -->
-      <?php }else{ ?>
-        	<br><p class="shp_txt">Free Shipping</p> 
-          <!-- Show on products list pages --> 
-      <?php } 
-				    /*echo $shipping_method = WC_Shipping_Zones::get_shipping_method( 88 );
-				    print_r($shipping_method);
-				    if($shipping_method){
-				        
-				    }*/
-					
-		?>
-		</td>
-    <?php 
-      $isgcp = false;
-      if(ign_gc_pricer::is_gcp($item['product_id'])){
-          $isgcp = true;
-      }
-    ?>
-     <td class="product-price" data-gcp="<?=$isgcp;?>">
-  <?php 
-     if(isset($item['amount']) && !empty($item['amount'])){ 
-  ?>
-        <span class="woocommerce-Price-amount amount">
-          <span class="woocommerce-Price-currencySymbol">R</span>
-          <span class="woocommerce-Price-current-amount"><?=$item['amount'];?></span>
-        </span>
-  <?php 
-     }elseif(!empty($_product->get_price_html())){
-        echo $_product->get_price_html();
-     }else{
-            global $product;
-              // go through a few options to find the $price we should display in the input (typically will be the suggested price)
-              if( isset( $_POST['nyp'] ) &&  floatval( $_POST['nyp'] ) >= 0 ) {
-                $num_decimals = ( int ) get_option( 'woocommerce_price_num_decimals' );
-                $price = round( floatval( $_POST['nyp'] ), $num_decimals );
-              }elseif ( $product->suggested && floatval( $product->suggested ) > 0 ) {
-                $price = $product->suggested;
-              }elseif ( $product->minimum && floatval( $product->minimum ) > 0 ) {
-                $price =  $product->minimum;
-              }else {
-                $price = '';
+ <?php
+          $registryCats = array();
+          if(!empty($items)){
+              foreach($items as $item){
+                $product_cats = wp_get_post_terms( $item['product_id'], 'product_cat' );
+                if(is_array($product_cats) && !empty($product_cats)){
+                  foreach($product_cats as $key => $category){
+                    $taxonomy_term_meta = get_option( "taxonomy_".$category->term_id);
+                    if(is_array($taxonomy_term_meta) && !empty($taxonomy_term_meta)){
+                      if(isset($taxonomy_term_meta['registry_cat']) && $taxonomy_term_meta['registry_cat'] != 0){
+                        array_push($registryCats, $category->name);
+                      }
+                    }
+                  }
+                }
               }
+          }  
+        $itemsByCat = array();
+        if(!empty($items)){
+          foreach($items as $key => $item){
+                $disableProductFromBuying = false;
+              if(isset($item['quantity']) && ($item['quantity'] < 1)){
+                    $disableProductFromBuying = true;
+              }
+              $product_cats = wp_get_post_terms( $item['product_id'], 'product_cat' );
+              if(is_array($product_cats) && !empty($product_cats)){
+                foreach($product_cats as $key => $category){
+                  if(in_array($category->name, $registryCats)){
+                      if(isset($itemsByCat['others'][$item['product_id']])){
+                          unset($itemsByCat['others'][$item['product_id']]);
+                      }
+                      $itemsByCat[$category->name][$item['product_id']] = $item;
+                      break;
+                  }else{
+                      $itemsByCat['others'][$item['product_id']] = $item;
+                  }
+                }
+              }else{
+                $itemsByCat['others'][$item['product_id']] = $item;
+              }
+
+          }
+        }
+        if(!empty($itemsByCat)){
+          asort($itemsByCat);
+          if(isset($itemsByCat['others'])){
+            $other = $itemsByCat['others'];
+            unset($itemsByCat['others']);
+            $itemsByCat['others'] = $other;
+          }
+          $countItems = 0;
+          foreach ($itemsByCat as $cat => $catArray){
+            $countCatItems = 0;
+            if(!empty($catArray)){              
+              foreach($catArray as $key => $item){
+                $countItems++;
+                $countCatItems++;
+                $disableProductFromBuying = false;
+      				  if(isset($item['quantity']) && ($item['quantity'] < 1)){
+                    $disableProductFromBuying = true;
+                }    
+                        
+                      $productToGet = $item['product_id'];
+            				  if(isset($item['variation_id']) && !empty($item['variation_id'])){
+                        $productToGet = $item['variation_id'];
+                      }     
+            					$_product = wc_get_product($productToGet);
+            					$request = unserialize($item['info_request']);
+            					$request_st = Magenest_Giftregistry_Model::show_info_request($item, $id);
+            					$request_st = str_replace(' ', '', $request_st);
+                      $statusClassOfProduct = ''; 
+                      if($disableProductFromBuying == true){
+                        $statusClassOfProduct = 'disable disable-product-buy'; 
+                      } 
+                if(!empty($_product)){
+                  if($countCatItems == 1){
+           ?>    
+                         <tr class="">
+                            <td class="parent-cat main-cat" colspan="8">
+                               <h3 class="main-cat-heading">
+                                <?= $cat; ?>
+                              </h3>
+                            </td>
+                        </tr>
+
+  <?php                  
+                      }
+                  ?>
+                      <tr class="<?= $statusClassOfProduct;?>">
+                        <td class="num-item"><?=$countItems;?></td>
+                            <td class="product-thumbnail registry_imgs">
+          <?php
+                            if($_product->get_image()){
+                              $thumbnail = $_product->get_image();
+                    					printf('<a href="%s">%s</a>', $_product->get_permalink(), $thumbnail);
+                            }
           ?>
-              <div class="gcp">
-                <?php echo ign_gc_pricer::price_input_helper( esc_attr( $price ), array( 'name' => 'nyp' ) ); ?>
-              </div> 
-    <?php } ?>
-		</td>
+                            </td>
+                            <td class="product-name">
+          <?php 
+                  					echo sprintf( '<a href="%s">%s</a>', $_product->get_permalink(), $_product->get_title());
+                            global $post;                               
+                            $arrayCheck = array();
+                            $terms = get_the_terms( $item['product_id'], 'product_cat' );
+                            foreach ($terms as $term) {
+                                array_push($arrayCheck,$term->term_id);
+                            }
+                            if(in_array(134,$arrayCheck)){ ?>
+                              <br>
+                              <p class="shp_txt">Cash Funds</p>
+          <?php   
+                            }else{ ?>
+                          	 <br><p class="shp_txt">Free Shipping</p> 
+          <?php   
+                            } 
+          ?>
+                  		      </td>
+          <?php 
+                            $isgcp = false;
+                            if((new ign_gc_pricer)->is_gcp($item['product_id'])){
+                                $isgcp = true;
+                            }
+          ?>
+                         <td class="product-price" data-gcp="<?=$isgcp;?>">
+          <?php 
+                             if(isset($item['amount']) && !empty($item['amount'])){ 
+          ?>
+                                <span class="woocommerce-Price-amount amount">
+                                  <span class="woocommerce-Price-currencySymbol">R</span>
+                                  <span class="woocommerce-Price-current-amount"><?=$item['amount'];?></span>
+                                </span>
+          <?php 
+                             }elseif(!empty($_product->get_price_html())){
+                                echo $_product->get_price_html();
+                             }else{
+                                global $product;
+                                  // go through a few options to find the $price we should display in the input (typically will be the suggested price)
+                                  if( isset( $_POST['nyp'] ) &&  floatval( $_POST['nyp'] ) >= 0 ) {
+                                    $num_decimals = ( int ) get_option( 'woocommerce_price_num_decimals' );
+                                    $price = round( floatval( $_POST['nyp'] ), $num_decimals );
+                                  }elseif ( $product->suggested && floatval( $product->suggested ) > 0 ) {
+                                    $price = $product->suggested;
+                                  }elseif ( $product->minimum && floatval( $product->minimum ) > 0 ) {
+                                    $price =  $product->minimum;
+                                  }else {
+                                    $price = '';
+                                  }
+          ?>
+                                <div class="gcp">
+         <?php 
+                                  echo ign_gc_pricer::price_input_helper( esc_attr( $price ), array( 'name' => 'nyp' ) ); ?>
+                                </div> 
+          <?php 
+                              } 
+          ?>
+                		      </td>
     <?php
-    $colspan='';
-      if($disableProductFromBuying == true){
-        $colspan = 'colspan="3"';
-      }
+                    $colspan='';
+                    if($disableProductFromBuying == true){
+                      $colspan = 'colspan="3"';
+                    }
     ?>
-    <td style="width: 30px;" class="product-quantity" <?=$colspan;?>>
-      <?php 
-          if(isset( $item['quantity'])) {
-						$receive_qty=0;
-						if(isset($item['received_qty'])){
-              $receive_qty = $item['received_qty'];
-            }
-						$remain_qty = $item['quantity'] - $receive_qty;
-						if($remain_qty < 0){
-              $remain_qty = 0;
-            }
-            if($disableProductFromBuying == true){ 
-      ?>        
-                  <span>Sold</span>
-                  <span class="vc_icon_element-icon fa fa-gift"></span>
+                        <td class="product-quantity" <?=$colspan;?>>
+    <?php 
+                              if(isset( $item['quantity'])) {
+                    						$receive_qty=0;
+                    						if(isset($item['received_qty'])){
+                                  $receive_qty = $item['received_qty'];
+                                }
+                    						$remain_qty = $item['quantity'] - $receive_qty;
+                    						if($remain_qty < 0){
+                                  $remain_qty = 0;
+                                }
+                                if($disableProductFromBuying == true){ 
+    ?>        
+                                      <span>Sold</span>
+                                      <span class="vc_icon_element-icon fa fa-gift"></span>
     <?php
-            }else{
-							//echo $remain_qty;
-              echo $item['quantity'];
-            }
-					}
-			?>
-                   
-    </td>
+                                }else{
+                                  echo $item['quantity'];
+                                }
+                    					}
+    ?>          
+                        </td>
     <?php
-      if($disableProductFromBuying == false){
+                    if($disableProductFromBuying == false){
     ?>
-    <td>
-        <input style="width: 40px" type="text" id="<?php echo $item['id']?>" />
-    </td>
-    <td>
-      <button style="background-color: #1aada3; color: white;"
-            data-product-id="<?= $item['product_id']; ?>"
-            data-variation-id="<?= $item['variation_id'];?>" 
-            data-registry-id="<?= $registry_id;?>" 
-            data-buy="<?= $request_st; ?>"  
-            name="<?= $item['id']?>"  
-            class="single_add_to_cart_button button alt" 
-            onclick="giftit(this)">
-            <?php echo __('BUY GIFT') ?>
-      </button>
-    
-    </td>
-    <?php } ?>
-  </tr>
-        <?php  
-			 }}}
-    }	
-	} 
-				    
+                        <td>
+                            <input style="width: 40px" type="text" id="<?php echo $item['id']?>" />
+                        </td>
+                        <td>
+                          <button style="background-color: #1aada3; color: white;"
+                                data-product-id="<?= $item['product_id']; ?>"
+                                data-variation-id="<?= $item['variation_id'];?>" 
+                                data-registry-id="<?= $registry_id;?>" 
+                                data-buy="<?= $request_st; ?>"  
+                                name="<?= $item['id']?>"  
+                                class="single_add_to_cart_button button alt" 
+                                onclick="giftit(this)">
+                                <?php echo __('BUY GIFT') ?>
+                          </button>
+                        </td>
+    <?php 
+                    } 
+    ?>
+                    </tr>
+    <?php  
+              }// checkproduct
+            }
+            }
+            }//foreach
+          }	//if
+  
                 echo '<div class="hidden"><pre>'; print_r($uniqueItems);  echo '</pre></div>';?>
       </tbody>
     </table>
@@ -407,6 +434,34 @@ $items = Magenest_Giftregistry_Model::get_items_in_giftregistry($id);
 </div>
 <div class="spinner"></div>
 <style>
+  td.main-cat {
+    background: #555; border: none; 
+    font-size: 1em; 
+    font-weight: bold; 
+    text-align: left;
+    margin-top: 2em; 
+    padding: 14px 19px 0px; 
+    text-transform: uppercase;
+  }
+  td h3.main-cat-heading{
+    color: #fff;
+    margin: 5px 20px 10px!important
+  }
+  td.product-thumbnail.registry_imgs{
+    max-width: 280px;
+    text-align: left;
+  }
+  td.product-name{
+    width:48%;
+  }
+  td.product-quantity{
+    width: 30px;
+  }
+  td.num-item{
+    width: 10px;
+    background: #555;
+    color: #fff;
+  }
   .spinner {
     background: url('/wp-admin/images/wpspin_light.gif') no-repeat;
     background-size: 16px 16px;
@@ -429,6 +484,7 @@ $items = Magenest_Giftregistry_Model::get_items_in_giftregistry($id);
     color: #000;
     font-size: 20px;
     margin: 2px 5px;
+    vertical-align: middle;
   }
   tr.disable.disable-product-buy td.product-quantity span.vc_icon_element-icon{
     font-size: 26px;

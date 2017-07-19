@@ -1,14 +1,14 @@
 <?php 
 $jquery_version = isset ( $wp_scripts->registered ['jquery-ui-core']->ver ) ? $wp_scripts->registered ['jquery-ui-core']->ver : '1.9.2';
-wp_enqueue_style( 'jquery-ui', 'https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css' );
-wp_enqueue_style( 'jquery-ui-style');
-wp_enqueue_style( 'jquery-ui-core');
-wp_enqueue_style( 'jquery-ui-accordion');
-wp_enqueue_script('jquery-ui-core');
-wp_enqueue_script('jquery-ui-datepicker');
-wp_enqueue_script('jquery-ui-accordion');
+	wp_enqueue_style( 'jquery-ui', 'https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css' );
+	wp_enqueue_style( 'jquery-ui-style');
+	wp_enqueue_style( 'jquery-ui-core');
+	wp_enqueue_style( 'jquery-ui-accordion');
+	wp_enqueue_script('jquery-ui-core');
+	wp_enqueue_script('jquery-ui-datepicker');
+	wp_enqueue_script('jquery-ui-accordion');
 $wishlist = '';
-if ($wid) {
+if($wid) {
 	$wishlist = Magenest_Giftregistry_Model::get_wishlist($wid);
 } 
 
@@ -114,7 +114,7 @@ $images = json_decode($record->images);
 		</div>
 	</div>
 </div>
-<?php } else{?>
+<?php } else{ ?>
 
 <form class="giftregistry-form create-registry"  method="POST" id="msform">
 	<ul id="progressbar">
@@ -133,14 +133,15 @@ $images = json_decode($record->images);
   <fieldset id="fieldset_2" >
         <!--input type="hidden" name="giftregistry_id" id="giftregistry_id" value="<?php if (is_object($wishlist)) : echo $wishlist->id ; endif;?>"/-->
 		<input name="create_giftregistry" id="create_giftregistry" type="hidden" value="1"/>
-  <?php
+ <?php
  $rid =  $wishlist->id;
   if(empty($rid)){
 	  echo "<div class='woocommerce-info'>Please enter your information before adding gifts to your registry.</div>";
 	
-  } else{
+  }else{
 	 
-  }?>
+  }
+?>
 	<div class="form-field">
 		<label for="title"><?php echo __('REGISTRY TITLE', GIFTREGISTRY_TEXT_DOMAIN) ?></label>
 		<input name="title" id="title" type="text" value="<?php if (is_object($wishlist)) : echo $wishlist->title ; endif;?>" size="40" placeholder="Ryan & Jo’s Registry">
@@ -166,11 +167,6 @@ $images = json_decode($record->images);
   
 </div>
 	</div>
-	<!--<div class="form-field">
-		<label for="registrant_email"><?php //echo __('Email', GIFTREGISTRY_TEXT_DOMAIN) ?><span class="required">*</span></label>
-		<input name="registrant_email" id="registrant_firstname" type="text" value="<?php //if (is_object($wishlist)) : echo $wishlist->registrant_email ; endif;?>"
-			value="" size="40">
-	</div>-->
 </div>
 	<div class="row">
 	<h3> <?php// echo __('YOUR PARTNER', GIFTREGISTRY_TEXT_DOMAIN) ?></h3>
@@ -227,8 +223,7 @@ $images = json_decode($record->images);
 <div id="dimension_error"></div>
 	</div>
 	<div class="col-md-4 col-sm-5 col-xs-12 text-left">
-	<a class="btn action-button" data-popup-open="popup-1" href="#" style="width: 100%;padding: 10px 0;margin-top: 4.5%;text-transform: capitalize;
-	font-size:13px;font-family: inherit; color:#000; background-color: #fff; border: 2px #69c7ee solid !important ">Upload Registry Background </a>
+	<a class="btn action-button" data-popup-open="popup-1" href="#" style="width: 100%;padding: 10px 0;margin-top: 4.5%;text-transform: capitalize; font-size:13px;font-family: inherit; color:#000; background-color: #fff; border: 2px #69c7ee solid !important ">Upload Registry Background </a>
 	    <img src="<?php if (is_object($wishlist)) : echo $wishlist->image ; endif;?>" id="bg_img_src" style="display:none">
 	</div>
 	</div>

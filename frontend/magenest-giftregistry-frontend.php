@@ -31,50 +31,16 @@ class Magenest_Giftregistry_Frontend {
 			);
 			
 		?>
-<script type="text/javascript">
-	<?php /*?>
-jQuery(document).ready(function() {
-	    jQuery('#ship-to-different-address-checkbox').prop('checked', true);
-	   jQuery('#shipping_first_name').val('<?php echo $address['first_name'] ?>');
-	   jQuery("#shipping_first_name").prop("readonly", true);
-	   jQuery('#shipping_last_name').val('<?php echo $address['last_name'] ?>');
-	   jQuery("#shipping_last_name").prop("readonly", true);
-	   jQuery('#shipping_company').val('<?php echo $address['company']  ?>');
-	    jQuery("#shipping_company").prop("readonly", true);
-
-	   jQuery('#shipping_address_1').val('<?php echo $address['address_1'] ?>');
-	   jQuery("#shipping_address_1").prop("readonly", true);
-	   jQuery('#shipping_address_2').val('<?php echo $address['address_2'] ?>');
-	   jQuery("#shipping_address_2").prop("readonly", true);
-	   jQuery('#shipping_city').val('<?php echo $address['city']  ?>');
-	   jQuery("#shipping_city").prop("readonly", true);
-	   jQuery('#shipping_state').val('<?php echo  $address['state']  ?>');
-	   jQuery("#shipping_city").prop("readonly", true);
-	   jQuery('#shipping_postcode').val('<?php echo $address['postcode']  ?>');
-	   jQuery("#shipping_postcode").prop("readonly", true);
-	   jQuery('#shipping_country').val('<?php echo $address['country']  ?>');
-	    jQuery("#shipping_country").prop("readonly", true);
-
-	   //shipping_state
-      }
-	) ;
-<?php */?>
-</script>
 <?php 
 		}
 	}
 	public function gift_registry() {
 		global $post;
-		//
 		$http_schema = 'http://';
 		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'])  {
 			$http_schema = 'https://';
 		}
-			
 		$request_link  = $http_schema. $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] ;
-			
-		
-		//
 		if (isset($_SESSION['buy_for_giftregistry_id'])) {
 			
 			$wishlist_id = $_SESSION['buy_for_giftregistry_id'];
@@ -86,22 +52,16 @@ jQuery(document).ready(function() {
 			$registry_name = $registrantname;
 			
 			$giftregistry_page = get_permalink( get_option('follow_up_emailgiftregistry_page_id'));
-			//
-			if (strpos($request_link, '?') > 0)  {
+			if(strpos($request_link, '?') > 0)  {
 				$giftregistry_link = $giftregistry_page . '&giftregistry_id='. $wishlist_id;
 				$giftregistry_end_purchase = $giftregistry_page . '&end_buy_giftregistry='. $wishlist_id;
-			} else {
+			}else{
 				$giftregistry_link = $giftregistry_page . '?giftregistry_id='. $wishlist_id;
 				$giftregistry_end_purchase = $giftregistry_page . '?end_buy_giftregistry='. $wishlist_id;
 			}
-			//
-			
-			
-			if ($coregistrantname !=' ') $registry_name .= __(' and' , GIFTREGISTRY_TEXT_DOMAIN) . " ". $coregistrantname;
-				
-		    //echo "<span id='giftregistry-cart' > <a href={$giftregistry_link}>" . __('Gift for ', GIFTREGISTRY_TEXT_DOMAIN) .$registry_name.  "</a></span>";
-		    //echo "<span id='giftregistry-cart' > <a href={$giftregistry_end_purchase}>" . __('Ending buy gift registry session', GIFTREGISTRY_TEXT_DOMAIN) .$registry_name.  "</a></span>";
-		    
+			if($coregistrantname !=' '){
+				$registry_name .= __(' and' , GIFTREGISTRY_TEXT_DOMAIN) . " ". $coregistrantname;
+			}
 		}
 	}
 	

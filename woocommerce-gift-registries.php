@@ -156,7 +156,7 @@ class Magenest_Giftregistry{
 			load_plugin_textdomain ( GIFTREGISTRY_TEXT_DOMAIN, false, 'woocommerce-gift-registries/languages/' );
 		}
 		public function register_session(){
-			if( !session_id()){
+			if(!session_id()){
 				session_start();
 			}
 		}
@@ -311,6 +311,7 @@ $GLOBAl['giftregistryresult'] = array();
 
 function addScriptToTheme(){
 	$registryCountSession = 0;
+	//Magenest_Giftregistry_Model::get
 	if(isset($_SESSION['registryCount']) && !empty($_SESSION['registryCount'])){
 		$registryCountSession = $_SESSION['registryCount'];  
 	}
@@ -318,13 +319,15 @@ function addScriptToTheme(){
 <script>
 	jQuery(document).ready( function($) {
 		$(document).on('click', 'body .registry_hover',function(event){
-			var thisButton = $(this);
 			// get search term
 			var thisButton = $(this);
+
 			var registryId = thisButton.attr('data-id');
+			
 			var product_id = thisButton.parent().children('.p_id').val();
 			var registries = '<?= $registryCountSession;?>';
-			if(registries == 0){
+
+			if(registries > 0){
 				if(registryId!='' || registries == 1){
 
 					var sPageURL = window.location;
@@ -491,6 +494,7 @@ function dhemy_ajax_search(){
 		<?php
 			} // foreach end 
 		}	// if end
+	exit;
 }
 		
 /*ajax function for Add to registry button on product hover*/
@@ -550,7 +554,7 @@ function ajax_registry() {
 						
 				}
 		}
-	
+	exit;
 }
 
 	/*other ajax function ends here*/

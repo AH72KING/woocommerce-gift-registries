@@ -32,14 +32,12 @@ class Magenest_Giftregistry_Form_Handler {
 					$_SESSION ['registrynamesearch'] = $name;
 					$query = "select * from {$rTb} where registrant_firstname like \"%{$name}%\" or registrant_lastname like \"%{$name}%\" or coregistrant_firstname like \"%{$name}%\" or coregistrant_lastname like \"%{$name}%\" or title like \"%{$name}%\"";
 					
-					if ($email) {
+					if($email) {
 						$_SESSION ['registryemailsearch'] = $email;
 						
 						$query .= "or registrant_email like \"%{$email}%\" or coregistrant_email like \"%{$email}%\"";
 					}
-				} else {
-					// $query = "select * from {$rTb} ";
-					
+				}else{
 					if ($email) {
 						$_SESSION ['registryemailsearch'] = $email;
 						
@@ -56,12 +54,6 @@ class Magenest_Giftregistry_Form_Handler {
 		} 
 		$giftregistryresult = $collection;
 		$_SESSION['registryresult'] = $collection;
-// 		ob_start();
-// 		$template_path = GIFTREGISTRY_PATH.'template/';
-// 		$default_path = GIFTREGISTRY_PATH.'template/';
-			
-// 		wc_get_template( 'giftregistry-index.php', array( 'collection' =>$collection,  ),$template_path,$default_path );
-// 		echo  ob_get_clean();
 	}
 	public static function giftregistry_share_email() {
 		if (isset ( $_REQUEST['giftregistry-share-email'] ) && isset($_REQUEST['recipient'])&& isset($_REQUEST['email_subject'])&& isset($_REQUEST['message'])) {
@@ -176,7 +168,7 @@ class Magenest_Giftregistry_Form_Handler {
 					$url = get_home_url().'/shop';
 
 					$data['title'] = (isset($_REQUEST['title'])) ? $_REQUEST['title'] :'';
-					$data['registry_unique_number'] = time();
+					
 					$data['registrant_firstname'] = (isset($_REQUEST['registrant_firstname'])) ? $_REQUEST['registrant_firstname'] :'';
 					$data['registrant_lastname'] = (isset($_REQUEST['registrant_lastname'])) ? $_REQUEST['registrant_lastname'] :'';
 					$data['registrant_email'] = (isset($_REQUEST['registrant_email'])) ? $_REQUEST['registrant_email'] :'';
@@ -190,13 +182,15 @@ class Magenest_Giftregistry_Form_Handler {
 					
 					$data['event_date_time'] = (isset($_REQUEST['event_date_time'])) ? $_REQUEST['event_date_time'] :'';
 					$data['event_date_time'] = date('Y-m-d H:i:s' ,strtotime($data['event_date_time'] ));
-					$data['created_at'] = date('Y-m-d H:i:s');
+					
 
 					$data['event_location'] = (isset($_REQUEST['event_location'])) ? $_REQUEST['event_location'] :'';
 					
 					$data['message'] = (isset($_REQUEST['message'])) ? $_REQUEST['message'] :'';
 					$data['image'] = (isset($_REQUEST['pro_image'])) ? $_REQUEST['pro_image'] :'';
 					if($is_edit == false) {	
+						$data['created_at'] = date('Y-m-d H:i:s');
+						$data['registry_unique_number'] = time();
 						$wpdb->insert($rTb, $data);
 						$registryId = $wpdb->insert_id;
 
@@ -224,6 +218,14 @@ class Magenest_Giftregistry_Form_Handler {
 				    	wp_redirect( $url);
 					 	exit;
 					}elseif($is_edit) {
+						unset($data['user_id']);
+						$data['update_at'] = date('Y-m-d H:i:s');
+						if($data['banner_image'] == ''){
+							unset($data['banner_image']);
+						}
+						if($data['image'] == ''){
+							unset($data['image']);
+						}
 						$wpdb->update($rTb, $data, array('id' => $id));
 						$url = get_home_url().'/wp-admin/admin.php?page=gift_registry&edit=1&id='.$id;
 						wp_redirect($url);
@@ -240,9 +242,9 @@ class Magenest_Giftregistry_Form_Handler {
 			$item_tbl = $wpdb->prefix . 'magenest_giftregistry_item';
 			$r_id = self::get_giftregistry_id();
 			if($r_id){ 
-				$customer_id = get_current_user_id ();
-				$addr_1 = get_user_meta( $customer_id,   'shipping_address_1', true );
-				$addr_2 = get_user_meta( $customer_id,   'shipping_address_2', true );
+				$customer_id = get_current_user_id();
+				$addr_1 = get_user_meta( $customer_id,'shipping_address_1', true );
+				$addr_2 = get_user_meta( $customer_id,'shipping_address_2', true );
 				if(!$addr_1  && (get_option('giftregistry_shipping_restrict','yes') =='yes')){
 					wc_add_notice ( __ ( 'You have to fulfill shipping address before adding item to gift registry', GIFTREGISTRY_TEXT_DOMAIN ), 'notice' );
 						return;
@@ -251,8 +253,7 @@ class Magenest_Giftregistry_Form_Handler {
 
 				if(isset($_REQUEST['variation_id'])){
 					$current_variation_id = $_REQUEST['variation_id'];
-				}
-				
+				}	
 
 				if(isset($_REQUEST['registryId']) && !empty($_REQUEST['registryId'])){
 				    $whisListId = $_REQUEST['registryId'];
@@ -364,22 +365,19 @@ class Magenest_Giftregistry_Form_Handler {
 	}
 	public static function update_giftregistry_item_action() {
 		if (isset($_REQUEST['update_giftregistry_item'])) {
-			if (isset($_REQUEST['remove_item']) && isset($_REQUEST['item_id'])) {
+			if(isset($_REQUEST['remove_item']) && isset($_REQUEST['item_id'])) {
 				Magenest_Giftregistry_Model::delete_giftregistry_item ( $_REQUEST['item_id'] );
 			}
-			if (isset($_REQUEST['wishlist_item']) && is_array($_REQUEST['wishlist_item']) && !empty($_REQUEST['wishlist_item'])) {
+			if(isset($_REQUEST['wishlist_item']) && is_array($_REQUEST['wishlist_item']) && !empty($_REQUEST['wishlist_item'])) {
 				foreach ($_REQUEST['wishlist_item'] as $item_id=>$qty) {
-					
-					if ($qty > 0) {
+					if($qty > 0){
 						Magenest_Giftregistry_Model::update_giftregistry_item ( $item_id, $qty );
-					} else {
+					}else{
 						Magenest_Giftregistry_Model::delete_giftregistry_item ( $item_id );
 					}
 				}
-				
 			}
 		}
-		
 	}
 	
 	public static function get_giftregistry_id() {
@@ -389,12 +387,11 @@ class Magenest_Giftregistry_Form_Handler {
 		
 		$user_id = get_current_user_id();
 		$row = $wpdb->get_row("select * from {$rTb} where user_id = {$user_id} ");
-		
-		if ($row) {
+
+		if($row){
 			return $row->id;
 		}
-		
 	}
-
 }
+
 Magenest_Giftregistry_Form_Handler::init();

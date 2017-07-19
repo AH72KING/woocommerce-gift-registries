@@ -10,7 +10,7 @@ if ( sizeof( $order->get_items() ) > 0 ) {
 		<br>
 		<?php 
 	}
-	}
+}
 
 ?>
 <h2> Thank you. Wrapistry</h2>

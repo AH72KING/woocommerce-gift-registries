@@ -3,9 +3,6 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 class Magenest_Giftregistry_Widget extends WP_Widget {
 
-	/**
-	 * Constructor
-	 */
 	public function __construct() {
 		$this->widget_cssclass    = 'woocommerce widget_price_filter';
 		$this->widget_description = __( 'Shows a price filter slider in a widget which lets you narrow down the list of shown products when viewing product categories.', 'woocommerce' );
@@ -20,5 +17,4 @@ class Magenest_Giftregistry_Widget extends WP_Widget {
 		);
 		parent::__construct();
 	} 
-	
 }
