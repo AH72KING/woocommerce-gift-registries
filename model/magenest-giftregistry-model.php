@@ -198,13 +198,10 @@ class Magenest_Giftregistry_Model {
 			////////////////////////////////////////////////////////////////
 
 			$recipients = array();
-			if(isset($order->billing_email) && !empty($order->billing_email)){
-				if(!in_array($order->billing_email, $recipients)){
-					$recipients[]= $order->billing_email;
-					self::sendNotificationEmail($order->billing_email, $order_id,'customer');
-				}
-			}
+			$today = date("F j, Y, g:i a");
+			$subject = 'Your Wrapistry order receipt from '.$today;
 			if(!empty($registryIDs)){
+				$subject = 'Wrapistry '. get_option('giftregistry_notify_email_subject').' at '.$today;
 				foreach ($registryIDs as $key => $registryID){
 					if(!empty($registryID)){
 						$wishlist = self::get_wishlist($registryID);
@@ -218,7 +215,7 @@ class Magenest_Giftregistry_Model {
 								if(!empty($registryOwnerData->user_email)){
 									if(!in_array($registryOwnerData->user_email, $recipients)){
 										$recipients[]= $registryOwnerData->user_email;
-										self::sendNotificationEmail($registryOwnerData->user_email, $order_id, 'owner', $registryDataToSend);
+										self::sendNotificationEmail($registryOwnerData->user_email, $order_id, 'owner', $subject, $registryDataToSend);
 									}
 								}
 							}
@@ -229,7 +226,7 @@ class Magenest_Giftregistry_Model {
 							if(!empty($wishlist->registrant_email)){
 								if(!in_array($wishlist->registrant_email, $recipients)){
 									$recipients[]= $wishlist->registrant_email;
-									self::sendNotificationEmail($wishlist->registrant_email, $order_id, 'owner', $registryDataToSend);
+									self::sendNotificationEmail($wishlist->registrant_email, $order_id, 'owner', $subject,  $registryDataToSend);
 								}
 							}
 						}
@@ -243,33 +240,26 @@ class Magenest_Giftregistry_Model {
 				if(!empty($adminEmail)){
 					if(!in_array($adminEmail, $recipients)){
 						$recipients[]= $adminEmail;
-						self::sendNotificationEmail($adminEmail, $order_id,'admin');
+						self::sendNotificationEmail($adminEmail, $order_id,'admin', $subject);
 					}
+				}
+			}
+
+			if(isset($order->billing_email) && !empty($order->billing_email)){
+				if(!in_array($order->billing_email, $recipients)){
+					$recipients[]= $order->billing_email;
+					self::sendNotificationEmail($order->billing_email, $order_id,'customer', $subject);
 				}
 			}
 			
 			unset($_SESSION ['buy_for_giftregistry_id']);
 	}	
 	
-	public static function sendNotificationEmail($to,$order_id,$template_type, $registryDataToSend = array()) {
+	public static function sendNotificationEmail($to,$order_id,$template_type, $subject, $registryDataToSend = array()) {
 		
 		$headers = array();
 		$headers [] = "Content-Type: text/html; charset=UTF-8";
 		$headers [] = 'From: ' . get_option( 'woocommerce_email_from_name' ) . ' <' . get_option('woocommerce_email_from_address') . '>';
-		
-		$subject = get_option('giftregistry_notify_email_subject') ;
-
-
-		
-		/*if(!empty($registryDataToSend)){
-			echo '<pre>';
-				print_r($registryDataToSend);
-			echo '</pre>';
-			exit;
-		}
-*/
-
-
 
 		$content = self::get_email_html_content_by_template($order_id, $template_type, $registryDataToSend);	
 

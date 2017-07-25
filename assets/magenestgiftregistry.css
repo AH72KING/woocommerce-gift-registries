@@ -226,18 +226,22 @@ label{
 color: #1B1919;
 font-family: inherit;
 }
-
-.woocommerce .button
-{
-  /*background-color: white !important;
-    border: 2px solid #000 !important;
-    color: #333 !important; */
+.woocommerce .button{
+ 	font-family: inherit;
+}
+.woocommerce.single.single-product .button{
+  	background-color: #69c7ee!important;
+    color: #fff!important;
+    border-color: #69c7ee!important;
+}
+body.woocommerce.single.single-product .button:hover{
+    background-color: #333 !important;
+    border-color: #333 !important;
+    color: #fff !important;
     font-family: inherit;
- 
 }
 
-.woocommerce .button:hover
-{
+.woocommerce .button:hover{
     background-color: #333 !important;
     border-color: #333 !important;
     color: #fff !important;
@@ -304,11 +308,11 @@ body.page-id-385  div.header-spacing
 	margin-bottom: 0px !important;
 }
 
-body.page-id-385 .container
+body.page-id-385 .main-page-wrapper .container
 {
 	width:100%;
 }
-body.page-id-7812 .container
+body.page-id-7812 .main-page-wrapper .container
 {
 	width:100%;
 }
@@ -317,7 +321,6 @@ body.page-id-7812 .container
     background-size: cover;
     background-position: center;
 }
-registry.1485351105.css:1
 .registry-header-wrapper {
     background-repeat: no-repeat;
     background-position: top center;
@@ -394,8 +397,6 @@ p.registry-link .icon--link {
     font-size: 1.125em;
     vertical-align: middle;
 }
-Inherited from p.registry-link
-registry.1485351105.css:1
 p.registry-link {
     color: #00afd1;
     font-family: Helvetica,"Helvetica Neue",Arial,sans-serif;

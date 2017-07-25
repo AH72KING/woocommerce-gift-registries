@@ -4,12 +4,30 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class Magenest_Giftregistry_Form_Handler {
 	
 	public static function init() {
+
 		add_action('init', array( __CLASS__, 'update_giftregistry_item_action' ) );
 		add_action('init', array( __CLASS__, 'add_to_giftregistry_action' ) );
 		add_action('init', array( __CLASS__, 'create_giftregistry_action' ) );
 		add_action('init', array( __CLASS__, 'end_buy_giftregistry' ) );
 		add_action('init', array( __CLASS__, 'giftregistry_share_email' ) );
 		add_action('init', array( __CLASS__, 'searchgiftregistry' ) );
+		add_action('init', array( __CLASS__, 'ajax_init' ) );
+	}
+	public static function ajax_init() {
+		add_action( 'wp_ajax_update_giftregistry_item_action', 'update_giftregistry_item_action' );
+		add_action( 'wp_ajax_nopriv_update_giftregistry_item_action', 'update_giftregistry_item_action' );
+
+		add_action( 'wp_ajax_add_to_giftregistry_action', 'add_to_giftregistry_action' );
+		add_action( 'wp_ajax_nopriv_add_to_giftregistry_action', 'add_to_giftregistry_action' );
+
+		add_action( 'wp_ajax_end_buy_giftregistry', 'end_buy_giftregistry' );
+		add_action( 'wp_ajax_nopriv_end_buy_giftregistry', 'end_buy_giftregistry' );
+
+		add_action( 'wp_ajax_giftregistry_share_email', 'giftregistry_share_email' );
+		add_action( 'wp_ajax_nopriv_giftregistry_share_email', 'giftregistry_share_email' );
+
+		add_action( 'wp_ajax_searchgiftregistry', 'searchgiftregistry' );
+		add_action( 'wp_ajax_nopriv_searchgiftregistry', 'searchgiftregistry' );
 	}
 	public static function searchgiftregistry() {
 		global $giftregistryresult;
@@ -234,19 +252,28 @@ class Magenest_Giftregistry_Form_Handler {
 		}
 	}
 	public static function add_to_giftregistry_action() {
-
+		$return = array();
 		if( isset ( $_REQUEST['add-registry'] ) 
 		&& $_REQUEST['add-registry'] == 1 
 		&& !isset($_REQUEST['buy_for_giftregistry_id'])){
+
 			global $wpdb;
 			$item_tbl = $wpdb->prefix . 'magenest_giftregistry_item';
 			$r_id = self::get_giftregistry_id();
 			if($r_id){ 
+				$Registry = Magenest_Giftregistry_Model::get_wishlist($r_id);
+				$giftRegistryTitle = 'no name';
+				if(!empty($Registry)){
+					if(isset($Registry->title) && !empty($Registry->title)){
+						$giftRegistryTitle = $Registry->title;
+					}
+				}
 				$customer_id = get_current_user_id();
 				$addr_1 = get_user_meta( $customer_id,'shipping_address_1', true );
 				$addr_2 = get_user_meta( $customer_id,'shipping_address_2', true );
 				if(!$addr_1  && (get_option('giftregistry_shipping_restrict','yes') =='yes')){
-					wc_add_notice ( __ ( 'You have to fulfill shipping address before adding item to gift registry', GIFTREGISTRY_TEXT_DOMAIN ), 'notice' );
+					//wc_add_notice ( __ ( 'You have to fulfill shipping address before adding item to gift registry', GIFTREGISTRY_TEXT_DOMAIN ), 'notice' );
+					$return['shipping'] = 'You have to fulfill shipping address before adding item to gift registry';
 						return;
 				}
 				$current_pid = $_POST['add-to-giftregistry'];
@@ -272,13 +299,14 @@ class Magenest_Giftregistry_Form_Handler {
 				}  
 				
 				$total_reocrds = count($if_product_exist);
+
 				if ($total_reocrds){
 							global $wpdb;
 								$row_id = $if_product_exist[0]->id;
 								$current_quantity = $_REQUEST['quantity'];
 								$previous_quantity = $if_product_exist[0]->quantity;
 								$total_quantity = $current_quantity+$previous_quantity;
-							$data = array ();
+							$data = array();
 						$data['wishlist_id'] = $r_id;
 						$data['product'] = (isset($_REQUEST['product'])) ? $_REQUEST['product']:'';
 						$data['product_id'] = $_REQUEST['add-to-giftregistry'];
@@ -304,13 +332,14 @@ class Magenest_Giftregistry_Form_Handler {
 		                         session_start();
 							}
     						if(isset($data['amount']) && $data['amount'] < 100){
-        					   	wc_add_notice ( __ ( 'Minimum price should be 100', GIFTREGISTRY_TEXT_DOMAIN ), 'notice' );
+        					   	//wc_add_notice ( __ ( 'Minimum price should be 100', GIFTREGISTRY_TEXT_DOMAIN ), 'notice' );
         					} else
 								$_SESSION['prod_add'] = true;
-						//	wc_add_notice ( __ ( 'Product was successfully added to gift registry', GIFTREGISTRY_TEXT_DOMAIN ), 'success' );
+						//wc_add_notice ( __ ( 'Product was successfully added to gift registry ( '.$giftRegistryTitle.' )', GIFTREGISTRY_TEXT_DOMAIN ), 'success' );
+						$return['success'] = 'Product was successfully added to gift registry ( '.$giftRegistryTitle.' )';
 				}else{
 					///////////////////////////////////
-					$data = array ();
+					$data = array();
 					$data['product'] = (isset($_REQUEST['product'])) ? $_REQUEST['product']:'';
 					$data['product_id'] = $_REQUEST['add-to-giftregistry'];
 					$data['product_cat_id'] = $_REQUEST['product_category'];
@@ -336,21 +365,24 @@ class Magenest_Giftregistry_Form_Handler {
 					    $data['wishlist_id'] = $r_id;
 					}
 
-					if ($data['product_id'] > 0 && (!isset($data['amount'])) || $data['amount'] >= 100 )  {
+					if($data['product_id'] > 0 && (!isset($data['amount'])) || $data['amount'] >= 100 )  {
 						$wpdb->insert($item_tbl, $data);
 						if(!session_id()){
 		                         session_start();
 							}
 								$_SESSION['prod_add'] = true;
-						//wc_add_notice ( __ ( 'Product was successfully added to gift registry', GIFTREGISTRY_TEXT_DOMAIN ), 'success' );
+						//wc_add_notice ( __ ( 'Product was successfully added to gift registry ( '.$giftRegistryTitle.' )', GIFTREGISTRY_TEXT_DOMAIN ), 'success' );
+						$return['success'] = 'Product was successfully added to gift registry ( '.$giftRegistryTitle.' )';
 					}else if(isset($data['amount']) && $data['amount'] < 100){
-					   	wc_add_notice ( __ ( 'Minimum price should be 100', GIFTREGISTRY_TEXT_DOMAIN ), 'notice' );
+					   	//wc_add_notice ( __ ( 'Minimum price should be 100', GIFTREGISTRY_TEXT_DOMAIN ), 'notice' );
 					}
 					else{
-						wc_add_notice ( __ ( 'You have to select item', GIFTREGISTRY_TEXT_DOMAIN ), 'notice' );
+						//wc_add_notice ( __ ( 'You have to select item', GIFTREGISTRY_TEXT_DOMAIN ), 'notice' );
 							
 					}
 				}
+				echo 'OK::'.$return['success'].'::success';
+				exit;
 			}else{
 				//wc_add_notice ( __ ( 'You have to enter gift registry information before adding item to gift registry', GIFTREGISTRY_TEXT_DOMAIN ), 'notice' );
 				$url = site_url( '/create-registry/');
@@ -361,6 +393,7 @@ class Magenest_Giftregistry_Form_Handler {
 			//wc_add_notice ( __ ( 'You have to enter gift registry information before adding item to gift registry', GIFTREGISTRY_TEXT_DOMAIN ), 'notice' );
 				
 		}
+		
 		
 	}
 	public static function update_giftregistry_item_action() {

@@ -50,7 +50,8 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 							<th class="td" scope="row" colspan="2" style="text-align:<?php echo $text_align; ?>;"><?php _e( 'Note:', 'woocommerce' ); ?></th>
 							<td class="td" style="text-align:<?php echo $text_align; ?>;"><?php echo wptexturize( $order->get_customer_note() ); ?></td>
 						</tr><?php
-					}?>
+					}
+					if(!empty($couple_notes)){ ?>
 					<tr>
 						<th class="td" scope="row" colspan="2" style="text-align:<?php echo $text_align; ?>;">
 						Couple Note:
@@ -59,6 +60,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 						<?php echo wptexturize($couple_notes); ?>
 						</td>
 					</tr>
+					<?php } ?>
 			</tfoot>
 		</table>
 		<div style="font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif; margin-bottom: 40px;">
@@ -81,14 +83,6 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 		<div style="font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif; margin-bottom: 40px;">
 			<h2>Store Details</h2>
 			<ul>
-				<li>
-					<strong>Name:</strong>
-					 <span class="text">
-					 <a href="<?= 'https://wrapistry.shop/shop';?>">
-					 	Wrapistry
-					 </a>
-					 </span>
-				 </li>
 				 <li>
 					<strong>Email:</strong>
 					 <span class="text">info@wrapistry.shop.com</span>

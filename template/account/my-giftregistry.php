@@ -61,7 +61,6 @@ if(!defined('ABSPATH')) exit; // Exit if accessed directly
 </style>
 
 <div class="tab-pane redux-group-tab" id="2a">
-	<h2>General</h2>
 	<div class="row registry-header-wrapper  registry-header-wrapper-1" style= "background-image: url(<?php echo $img_url; ?>);">
 		    <a class="btn action-button" data-popup-open="popup-1" href="#" style="background: rgba(0,0,0,0.6);color:white">
 		    	<i class="fa fa-pencil"></i> 
