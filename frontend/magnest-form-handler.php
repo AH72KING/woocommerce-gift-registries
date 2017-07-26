@@ -185,7 +185,7 @@ class Magenest_Giftregistry_Form_Handler {
 					//$data['status'] = $_REQUEST['status'];
 					$url = get_home_url().'/shop';
 
-					$data['title'] = (isset($_REQUEST['title'])) ? $_REQUEST['title'] :'';
+					$data['title'] = (isset($_REQUEST['title'])) ? stripslashes_deep($_REQUEST['title']) :'';
 					
 					$data['registrant_firstname'] = (isset($_REQUEST['registrant_firstname'])) ? $_REQUEST['registrant_firstname'] :'';
 					$data['registrant_lastname'] = (isset($_REQUEST['registrant_lastname'])) ? $_REQUEST['registrant_lastname'] :'';
@@ -259,7 +259,11 @@ class Magenest_Giftregistry_Form_Handler {
 
 			global $wpdb;
 			$item_tbl = $wpdb->prefix . 'magenest_giftregistry_item';
-			$r_id = self::get_giftregistry_id();
+			if(isset($_REQUEST['registryId']) && !empty($_REQUEST['registryId'])){
+				$r_id = $_REQUEST['registryId'];
+			}else{
+				$r_id = self::get_giftregistry_id();
+			}
 			if($r_id){ 
 				$Registry = Magenest_Giftregistry_Model::get_wishlist($r_id);
 				$giftRegistryTitle = 'no name';
@@ -281,37 +285,28 @@ class Magenest_Giftregistry_Form_Handler {
 				if(isset($_REQUEST['variation_id'])){
 					$current_variation_id = $_REQUEST['variation_id'];
 				}	
-
-				if(isset($_REQUEST['registryId']) && !empty($_REQUEST['registryId'])){
-				    $whisListId = $_REQUEST['registryId'];
-				    if(isset($current_variation_id) &&!empty($current_variation_id)){
-				    	$if_product_exist = $wpdb->get_results("SELECT * FROM  wp_magenest_giftregistry_item WHERE `wishlist_id` = ".$whisListId." AND `product_id` = ".$current_pid." AND `variation_id` = ".$current_variation_id."");
-				    }else{
-				    	$if_product_exist = $wpdb->get_results("SELECT * FROM  wp_magenest_giftregistry_item WHERE `wishlist_id` = ".$whisListId." AND `product_id` = ".$current_pid."");
-				    }
-				    
+				if(isset($current_variation_id) &&!empty($current_variation_id)){
+				   	$if_product_exist = $wpdb->get_results("SELECT * FROM  wp_magenest_giftregistry_item WHERE `wishlist_id` = ".$r_id." AND `product_id` = ".$current_pid." AND `variation_id` = ".$current_variation_id."");
 				}else{
-					if(!empty($current_variation_id)){
-				    	$if_product_exist = $wpdb->get_results("SELECT * FROM  wp_magenest_giftregistry_item WHERE `wishlist_id` = ".$r_id." AND `product_id` = ".$current_pid." AND `variation_id` = ".$current_variation_id."");
-				    }else{
-				    	 $if_product_exist = $wpdb->get_results("SELECT * FROM  wp_magenest_giftregistry_item WHERE `wishlist_id` = ".$r_id." AND `product_id` = ".$current_pid."");
-				    }
-				}  
+				    $if_product_exist = $wpdb->get_results("SELECT * FROM  wp_magenest_giftregistry_item WHERE `wishlist_id` = ".$r_id." AND `product_id` = ".$current_pid."");
+				}
+				     
 				
 				$total_reocrds = count($if_product_exist);
 
-				if ($total_reocrds){
-							global $wpdb;
-								$row_id = $if_product_exist[0]->id;
-								$current_quantity = $_REQUEST['quantity'];
-								$previous_quantity = $if_product_exist[0]->quantity;
-								$total_quantity = $current_quantity+$previous_quantity;
-							$data = array();
-						$data['wishlist_id'] = $r_id;
-						$data['product'] = (isset($_REQUEST['product'])) ? $_REQUEST['product']:'';
-						$data['product_id'] = $_REQUEST['add-to-giftregistry'];
+				if($total_reocrds > 0){
+					global $wpdb;
+						$row_id = $if_product_exist[0]->id;
+						$current_quantity 	= $_REQUEST['quantity'];
+						$previous_quantity 	= $if_product_exist[0]->quantity;
+						$total_quantity 	= $current_quantity + $previous_quantity;
+
+					$data = array();
+						$data['wishlist_id'] 	= $r_id;
+						//$data['product'] 		= (isset($_REQUEST['product'])) ? $_REQUEST['product']:'';
+						$data['product_id'] 	= $_POST['add-to-giftregistry'];
+						$data['quantity'] 		= $total_quantity ;
 						$data['product_cat_id'] = $_REQUEST['product_category'];
-						$data['quantity'] = $total_quantity ;
 					
 					if(isset($_REQUEST['gcp']) && !empty($_REQUEST['gcp'])){
 					    $data['amount'] = $_REQUEST['gcp'];
@@ -321,22 +316,17 @@ class Magenest_Giftregistry_Form_Handler {
 						$data['variation_id'] = $_REQUEST['variation_id'];
 					}
 					
-					if(isset($_REQUEST['variation'])){
+					/*if(isset($_REQUEST['variation'])){
 						$data['variation'] = $_REQUEST['variation'];
-					}
+					}*/
 					
 					$info = serialize($_REQUEST);
 					$data['info_request'] = $info;
-							$update_item = $wpdb->update($item_tbl, $data, array('id' => $row_id));
-							if(!session_id()){
-		                         session_start();
-							}
-    						if(isset($data['amount']) && $data['amount'] < 100){
-        					   	//wc_add_notice ( __ ( 'Minimum price should be 100', GIFTREGISTRY_TEXT_DOMAIN ), 'notice' );
-        					} else
-								$_SESSION['prod_add'] = true;
-						//wc_add_notice ( __ ( 'Product was successfully added to gift registry ( '.$giftRegistryTitle.' )', GIFTREGISTRY_TEXT_DOMAIN ), 'success' );
-						$return['success'] = 'Product was successfully added to gift registry ( '.$giftRegistryTitle.' )';
+
+					$update_item = $wpdb->update($item_tbl, $data, array('id' => $row_id));
+					//echo $wpdb->last_query;
+
+					$return['success'] = 'Product was successfully added to gift registry ( '.$giftRegistryTitle.' )';
 				}else{
 					///////////////////////////////////
 					$data = array();
@@ -366,7 +356,7 @@ class Magenest_Giftregistry_Form_Handler {
 					}
 
 					if($data['product_id'] > 0 && (!isset($data['amount'])) || $data['amount'] >= 100 )  {
-						$wpdb->insert($item_tbl, $data);
+							$wpdb->insert($item_tbl, $data);
 						if(!session_id()){
 		                         session_start();
 							}

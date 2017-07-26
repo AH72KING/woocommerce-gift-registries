@@ -177,7 +177,7 @@ class Magenest_Giftregistry_Model {
 								$received_order .= $order_id;
 							}
 							
-							if($item_id) {
+							/*if($item_id) {
 								$wpdb->update ( $tbl, array (
 										'quantity' => $quantityToSave,
 										'received_qty' => $received_quantity,
@@ -185,7 +185,7 @@ class Magenest_Giftregistry_Model {
 								), array (
 										'id' => $item_id 
 								) );
-							}
+							}*/
 						}
 					}
 				}

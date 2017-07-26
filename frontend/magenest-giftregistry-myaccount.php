@@ -27,11 +27,15 @@ class Magenest_Giftregistry_MyAccount {
 		}
 		
 ?>
+
+
 	<div class="add-gift-registry" style="margin-top: 10px">
 		<input type="hidden" name="add-registry" id="add-registry" /> 
 		<input type="hidden" name="product_category" value="<?php echo $str_cat; ?>" readonly /> 
-		<a href="#" onclick="giftRegistry.submitRegistry()" class="button" id="add-to-registry"> <?php echo __('Add to registry') ?></a>
-		<input type="hidden" name="registryId" class="addto-reg-id" />
+		<a href="#" onclick="giftRegistry.submitRegistry()" class="button" id="add-to-registry">
+			<?php echo __('Add to registry') ?>
+		</a>
+		 <input type="hidden" name="registryId" class="addto-reg-id" />
 	</div>
 <?php
    }

@@ -241,18 +241,33 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
               $product_cats = wp_get_post_terms( $item['product_id'], 'product_cat' );
               if(is_array($product_cats) && !empty($product_cats)){
                 foreach($product_cats as $key => $category){
-                  if(in_array($category->name, $registryCats)){
-                      if(isset($itemsByCat['others'][$item['product_id']])){
-                          unset($itemsByCat['others'][$item['product_id']]);
-                      }
-                      $itemsByCat[$category->name][$item['product_id']] = $item;
-                      break;
-                  }else{
-                      $itemsByCat['others'][$item['product_id']] = $item;
-                  }
+                    if(in_array($category->name, $registryCats)){
+                        if(isset($item['variation_id']) && !empty($item['variation_id'])){
+                          if(isset($itemsByCat['others'][$item['variation_id']])){
+                             unset($itemsByCat['others'][$item['variation_id']]);
+                          }
+                          $itemsByCat[$category->name][$item['variation_id']] = $item;
+                        }else{
+                          if(isset($itemsByCat['others'][$item['product_id']])){
+                              unset($itemsByCat['others'][$item['product_id']]);
+                          }
+                          $itemsByCat[$category->name][$item['product_id']] = $item;
+                        }
+                        break;
+                    }else{
+                        if(isset($item['variation_id']) && !empty($item['variation_id'])){
+                            $itemsByCat['others'][$item['variation_id']] = $item;
+                        }else{
+                            $itemsByCat['others'][$item['product_id']] = $item;
+                        }
+                    }
                 }
               }else{
-                $itemsByCat['others'][$item['product_id']] = $item;
+                if(isset($item['variation_id']) && !empty($item['variation_id'])){
+                  $itemsByCat['others'][$item['variation_id']] = $item;
+                }else{
+                  $itemsByCat['others'][$item['product_id']] = $item;
+                }
               }
 
           }
@@ -269,7 +284,7 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
             $countCatItems = 0;
             if(!empty($catArray)){              
               foreach($catArray as $key => $item){
-                $countItems++;
+                
                 $countCatItems++;
                 $disableProductFromBuying = false;
       				  if(isset($item['quantity']) && ($item['quantity'] < 1)){
@@ -289,8 +304,8 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
                         $statusClassOfProduct = 'disable disable-product-buy'; 
                       } 
                 if(!empty($_product)){
-                  if($countCatItems == 1){
-           ?>    
+                  $countItems++;
+                  if($countCatItems == 1){ ?>    
                          <tr class="">
                             <td class="parent-cat main-cat" colspan="8">
                                <h3 class="main-cat-heading">

@@ -521,7 +521,7 @@ if(!defined('ABSPATH')) exit; // Exit if accessed directly
 	    top: 20px!important;
 	}
 	.main-page-wrapper{
-		z-index: 99999;
+		/*z-index: 99999;*/
 	}
 </style>
 <?php } ?>

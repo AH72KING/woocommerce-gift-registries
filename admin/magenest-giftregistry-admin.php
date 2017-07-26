@@ -325,12 +325,13 @@ class Magenest_Giftregistry_Admin extends WP_List_Table{
 		}
 	public function giftregistry_manage() {
 		if (isset ( $_REQUEST ['delete'] )) {
-			if (isset ( $_REQUEST ['id'] ))
-				$this->delete ( $_REQUEST ['id'] );
+			if (isset ( $_REQUEST ['id'] )){
+				$this->delete( $_REQUEST ['id'] );
+			}
 		} elseif (isset ( $_REQUEST ['edit'] )) {
-			if (isset ( $_REQUEST ['id'] ))
-				$this->edit ( $_REQUEST ['id'] );
-		} elseif (isset ( $_REQUEST ['delete'] )) {
+			if (isset ( $_REQUEST ['id'] )){
+				$this->edit( $_REQUEST ['id'] );
+			}
 		} else {
 			$this->index ();
 		}
@@ -484,7 +485,6 @@ class Magenest_Giftregistry_Admin extends WP_List_Table{
 	}
 	
 	public function delete($id) {
-		
 		Magenest_Giftregistry_Model::delete_giftregistry($id);
 	}
 	public function edit($id) {

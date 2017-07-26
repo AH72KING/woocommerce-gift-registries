@@ -169,7 +169,9 @@ $images = json_decode($record->images);
 	</div>
 </div>
 	<div class="row">
-	<h3> <?php// echo __('YOUR PARTNER', GIFTREGISTRY_TEXT_DOMAIN) ?></h3>
+	<h3> <?php// echo __('YOUR PARTNER', GIFTREGISTRY_TEXT_DOMAIN)
+	?>
+	</h3>
 	<div class="col-md-4">
 		<label for="coregistrant_firstname"><?php echo __('YOUR PARTNER', GIFTREGISTRY_TEXT_DOMAIN) ?></label>
 		<input name="coregistrant_firstname" placeholder="First name" id="coregistrant_firstname" type="text" value="<?php if (is_object($wishlist)) : echo $wishlist->coregistrant_firstname ; endif;?>" size="40">

@@ -102,8 +102,6 @@ class Magenest_Giftregistry{
 				if (isset($_REQUEST['id'] )){
 					$this->registries_obj->edit($_REQUEST['id']);
 				}
-			}elseif (isset($_REQUEST['delete'])) {
-
 			}else{ 
 			
 			 ?>
@@ -524,7 +522,7 @@ function ajax_registry() {
 					echo $r_data = 'notice_shipping_address';
 					return;
 				}
-				$data = array ();
+				$data = array();
 				$data['product'] = (isset($_REQUEST['product'])) ? $_REQUEST['product']:'';
 				$data['product_id'] = $_POST['term'];
 				$data['quantity'] = 1;
@@ -538,20 +536,30 @@ function ajax_registry() {
 				}
 				
 				$ajax_request =array();
-				$ajax_request['quantity'] =1;
+				$ajax_request['quantity'] = 1;
 				$ajax_request['add-to-giftregistry'] = $_POST['term'];
-				$ajax_request['add-registry'] =1;
+				$ajax_request['add-registry'] = 1;
 
 				$info = serialize ($ajax_request);
-				$data ['info_request'] = $info;
-				$data ['wishlist_id'] = $r_id;
+				$data['info_request'] = $info;
+				$data['wishlist_id'] = $r_id;
+				if(isset($data['product_id']) &&!empty($data['product_id'])){ 
+				    $if_product_exist = $wpdb->get_results("SELECT * FROM  wp_magenest_giftregistry_item WHERE `wishlist_id` = ".$r_id." AND `product_id` = ".$data['product_id']."");
+				}
+				$total_reocrds = count($if_product_exist);
 
-				if ($data ['product_id'] > 0) {
-					$wpdb->insert ( $item_tbl, $data );
-					echo $r_data = 'success_added';
+				if($total_reocrds > 0){
+					$row_id = $if_product_exist[0]->id;
+					$current_quantity 	= 1;
+					$previous_quantity 	= $if_product_exist[0]->quantity;
+					$total_quantity 	= $current_quantity + $previous_quantity;
+					$data['quantity'] 	= $total_quantity ;
+
+					$update_item = $wpdb->update($item_tbl, $data, array('id' => $row_id));
+
 				}else{
-					echo $r_data =  'notice_item';
-						
+					$wpdb->insert($item_tbl, $data);
+					echo $r_data = 'success_added';
 				}
 		}
 	exit;
