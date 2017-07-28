@@ -12,13 +12,21 @@ if(!defined('ABSPATH')) exit; // Exit if accessed directly
 	}
 	$blockEdit = false;
 	if(empty(Magenest_Giftregistry_Model::is_wishlist_id_belong_to_current_user($wid))){
-		if(!is_admin()){
+		$user = wp_get_current_user();
+		$allowed_roles = array('administrator');
+		if(!array_intersect($allowed_roles, $user->roles )){  
 			$blockEdit = true;
 		}
 	}
 	if($blockEdit == true){
-		echo '<h2>You cannot manange this gift registry as it does not belong to you according to our record.</h2>';
-		echo '<h5>If that is not true . Please Contact Site Admin at info@wrapistry.co.za</h5>';
+		$registryData = Magenest_Giftregistry_Model::get_wishlist($wid);
+		if(!empty($registryData)){
+			echo '<h2>You cannot manange this gift registry as it does not belong to you according to our record.</h2>';
+			echo '<h5>If that is not true . Please Contact Site Admin at info@wrapistry.co.za</h5>';
+		}else{
+			echo '<h2>Oops Sorry That Registry you want to access does not exist in our records.</h2>';
+			echo '<h5>Please Contact Site Admin at info@wrapistry.co.za</h5>';
+		}
 	}else{
 		if($wid) {
 			$wishlist 			= Magenest_Giftregistry_Model::get_wishlist($wid);

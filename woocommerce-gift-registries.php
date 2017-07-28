@@ -261,7 +261,7 @@ class Magenest_Giftregistry{
 				$this->upgrade( $installed_version );
 			}
 		}
-		public function upgrade() {
+		public function upgrade(){
 			
 		}
 		/**
@@ -321,7 +321,7 @@ function addScriptToTheme(){
 			var thisButton = $(this);
 
 			var registryId = thisButton.attr('data-id');
-			
+			var variationId = thisButton.parents('.product-element-top').find('a img').attr('variation');
 			var product_id = thisButton.parent().children('.p_id').val();
 			var registries = '<?= $registryCountSession;?>';
 
@@ -332,13 +332,17 @@ function addScriptToTheme(){
 					var myhref   = sPageURL['href'];
 					var equal_sign  = myhref.indexOf("=");
 					var registry_unique_number   = myhref.substr((equal_sign+1));
-
+					var variation_id = '';
+					if(variationId !='' && variationId != undefined){
+						variation_id = variationId;
+					}
 					$.ajax({
 						url : the_ajax_script.ajaxurl,
 						type:"POST",
 						data:{
 						'action':'ajax_registry',
 						'term' :product_id,
+						'variation_id':variation_id,
 						'registryId':registryId,
 						'registry_unique_number': registry_unique_number
 						},
@@ -543,8 +547,12 @@ function ajax_registry() {
 				$info = serialize ($ajax_request);
 				$data['info_request'] = $info;
 				$data['wishlist_id'] = $r_id;
-				if(isset($data['product_id']) &&!empty($data['product_id'])){ 
-				    $if_product_exist = $wpdb->get_results("SELECT * FROM  wp_magenest_giftregistry_item WHERE `wishlist_id` = ".$r_id." AND `product_id` = ".$data['product_id']."");
+				if(isset($data['product_id']) && !empty($data['product_id'])){ 
+					if(isset($data['variation_id']) && !empty($data['variation_id'])){
+						$if_product_exist = $wpdb->get_results("SELECT * FROM  wp_magenest_giftregistry_item WHERE `wishlist_id` = ".$r_id." AND `product_id` = ".$data['product_id']." AND `variation_id` = ".$data['variation_id']."");
+					}else{
+					    $if_product_exist = $wpdb->get_results("SELECT * FROM  wp_magenest_giftregistry_item WHERE `wishlist_id` = ".$r_id." AND `product_id` = ".$data['product_id']."");
+					}
 				}
 				$total_reocrds = count($if_product_exist);
 

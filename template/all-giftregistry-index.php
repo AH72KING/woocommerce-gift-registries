@@ -24,9 +24,14 @@ $flow_img = GIFTREGISTRY_URL.'/assets/flow.jpg';
 <img src="<?php //echo $flow_img?>" />
 <?php 
 
-if($_GET['registry_id']){
- /*   $registry_id	=	$_GET['registry_id'];
-	// DELTING SINGLE REGISTRY (WISHLIST TABLE) BUT WHY
+if(isset($_GET['registry_id']) 
+  && !empty($_GET['registry_id']) 
+  && isset($_GET['delete_single_registry_nd_items'])
+  && !empty($_GET['delete_single_registry_nd_items'])
+  && $_GET['delete_single_registry_nd_items'] == 1
+){
+$registry_id	=	$_GET['registry_id'];
+	// DELTING SINGLE REGISTRY (WISHLIST TABLE)
 	global $wpdb;
 	$prefix = $wpdb->prefix;
 	$tbl = "{$prefix}magenest_giftregistry_wishlist";
@@ -36,7 +41,7 @@ if($_GET['registry_id']){
 	global $wpdb;
 	$prefix 		= $wpdb->prefix;
 	$tbl 			= "{$prefix}magenest_giftregistry_item";
-	$wpdb->delete($tbl, array('wishlist_id' => $registry_id));*/
+	$wpdb->delete($tbl, array('wishlist_id' => $registry_id));
 } 
 $collection = array();
  		global $giftregistryresult;

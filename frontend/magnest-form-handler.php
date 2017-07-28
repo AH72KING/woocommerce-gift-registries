@@ -185,15 +185,15 @@ class Magenest_Giftregistry_Form_Handler {
 					//$data['status'] = $_REQUEST['status'];
 					$url = get_home_url().'/shop';
 
-					$data['title'] = (isset($_REQUEST['title'])) ? stripslashes_deep($_REQUEST['title']) :'';
+					$data['title'] = stripslashes_deep((isset($_REQUEST['title'])) ? stripslashes_deep($_REQUEST['title']) :'');
 					
-					$data['registrant_firstname'] = (isset($_REQUEST['registrant_firstname'])) ? $_REQUEST['registrant_firstname'] :'';
-					$data['registrant_lastname'] = (isset($_REQUEST['registrant_lastname'])) ? $_REQUEST['registrant_lastname'] :'';
+					$data['registrant_firstname'] = stripslashes_deep((isset($_REQUEST['registrant_firstname'])) ? $_REQUEST['registrant_firstname'] :'');
+					$data['registrant_lastname'] = stripslashes_deep((isset($_REQUEST['registrant_lastname'])) ? $_REQUEST['registrant_lastname'] :'');
 					$data['registrant_email'] = (isset($_REQUEST['registrant_email'])) ? $_REQUEST['registrant_email'] :'';
 					$data['registrant_type'] = (isset($_REQUEST['registrant_type'])) ? $_REQUEST['registrant_type'] :'';
 					
-					$data['coregistrant_firstname'] = (isset($_REQUEST['coregistrant_firstname'])) ? $_REQUEST['coregistrant_firstname'] :'';
-					$data['coregistrant_lastname'] = (isset($_REQUEST['coregistrant_lastname'])) ? $_REQUEST['coregistrant_lastname'] :'';
+					$data['coregistrant_firstname'] = stripslashes_deep((isset($_REQUEST['coregistrant_firstname'])) ? $_REQUEST['coregistrant_firstname'] :'');
+					$data['coregistrant_lastname'] = stripslashes_deep((isset($_REQUEST['coregistrant_lastname'])) ? $_REQUEST['coregistrant_lastname'] :'');
 					$data['coregistrant_email'] = (isset($_REQUEST['coregistrant_email'])) ? $_REQUEST['coregistrant_email'] :'';
 					$data['banner_image'] = (isset($_REQUEST['upload_image'])) ? $_REQUEST['upload_image'] :'';
 					$data['coregistrant_type'] = (isset($_REQUEST['coregistrant_type'])) ? $_REQUEST['coregistrant_type'] :'';
@@ -204,7 +204,7 @@ class Magenest_Giftregistry_Form_Handler {
 
 					$data['event_location'] = (isset($_REQUEST['event_location'])) ? $_REQUEST['event_location'] :'';
 					
-					$data['message'] = (isset($_REQUEST['message'])) ? $_REQUEST['message'] :'';
+					$data['message'] = stripslashes_deep((isset($_REQUEST['message'])) ? $_REQUEST['message'] :'');
 					$data['image'] = (isset($_REQUEST['pro_image'])) ? $_REQUEST['pro_image'] :'';
 					if($is_edit == false) {	
 						$data['created_at'] = date('Y-m-d H:i:s');
